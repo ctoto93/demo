@@ -1,12 +1,33 @@
 package service
 
-import "github.com/ctoto93/demo"
+import (
+	"fmt"
+
+	"github.com/ctoto93/demo"
+)
+
+const (
+	MinNumOfStudents = 5
+	MaxNumOfStudents = 30
+)
+
+var (
+	InsufficientStudentsErr = fmt.Errorf("A course should have min %v students", MinNumOfStudents)
+	ExceedingStudentsErr    = fmt.Errorf("A course should have max %v students", MaxNumOfStudents)
+)
 
 type Course struct {
 	repository courseRepository
 }
 
 func (cs *Course) Add(c *demo.Course) error {
+	if len(c.Students) < MinNumOfStudents {
+		return InsufficientStudentsErr
+	}
+
+	if len(c.Students) > MaxNumOfStudents {
+		return ExceedingStudentsErr
+	}
 	return cs.repository.AddCourse(c)
 }
 

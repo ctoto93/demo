@@ -69,7 +69,7 @@ func (suite *StudentServiceSuite) TestAddStudentExceedingCreditLimit() {
 	}
 
 	err := suite.service.Add(&s)
-	suite.Equal(err, OverCreditErr, "Should return OverCreditErr")
+	suite.Equal(OverCreditErr, err, "Should return OverCreditErr")
 	suite.repo.AssertNotCalled(suite.T(), "AddStudent")
 
 }

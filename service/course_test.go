@@ -45,13 +45,38 @@ func (suite *CourseServiceSuite) TestEditCourse() {
 }
 
 func (suite *CourseServiceSuite) TestAddCourse() {
-	s := factory.NewCourse()
+	c := factory.NewCourse()
+	c.Students = factory.NewStudents(5)
 
-	suite.repo.On("AddCourse", &s).Return(nil)
+	suite.repo.On("AddCourse", &c).Return(nil)
 
-	err := suite.service.Add(&s)
+	err := suite.service.Add(&c)
 	suite.Nil(err)
 	suite.repo.AssertExpectations(suite.T())
+}
+
+func (suite *CourseServiceSuite) TestAddCourseLessThanFiveStudents() {
+	c := factory.NewCourse()
+	c.Students = factory.NewStudents(3)
+
+	suite.repo.On("AddCourse", &c).Return(nil)
+
+	err := suite.service.Add(&c)
+	suite.Equal(InsufficientStudentsErr, err, "Should return InsufficientStudents Err")
+	suite.repo.AssertNotCalled(suite.T(), "AddStudent")
+
+}
+
+func (suite *CourseServiceSuite) TestAddCourseMoreThanThirtyStudents() {
+	c := factory.NewCourse()
+	c.Students = factory.NewStudents(31)
+
+	suite.repo.On("AddCourse", &c).Return(nil)
+
+	err := suite.service.Add(&c)
+	suite.Equal(ExceedingStudentsErr, err, "Should return ExceedingStudentsErr Err")
+	suite.repo.AssertNotCalled(suite.T(), "AddStudent")
+
 }
 
 func TestCourseService(t *testing.T) {
