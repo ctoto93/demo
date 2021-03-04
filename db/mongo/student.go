@@ -1,4 +1,4 @@
-package mongoRepo
+package mongo
 
 import (
 	"context"
