@@ -1,9 +1,11 @@
 package mongo
 
 import (
+	"context"
 	"time"
 
 	"github.com/ctoto93/demo"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -17,15 +19,17 @@ type Course struct {
 }
 
 func newCourse(dc demo.Course) (Course, error) {
-	oid, err := primitive.ObjectIDFromHex(dc.Id)
-	if err != nil {
-		return Course{}, err
-	}
-
 	c := Course{
-		Id:     oid,
 		Name:   dc.Name,
 		Credit: dc.Credit,
+	}
+
+	if dc.Id != "" {
+		oid, err := primitive.ObjectIDFromHex(dc.Id)
+		if err != nil {
+			return Course{}, err
+		}
+		c.Id = oid
 	}
 
 	return c, nil
@@ -53,7 +57,7 @@ func (c *Course) toDemoWithStudents() demo.Course {
 	var students []demo.Student
 
 	for _, s := range c.Students {
-		students = append(students, s.toDemoWithoutCourses())
+		students = append(students, s.toDemo())
 	}
 
 	return demo.Course{
@@ -65,10 +69,37 @@ func (c *Course) toDemoWithStudents() demo.Course {
 
 }
 
-func (c *Course) toDemoWithoutStudents() demo.Course {
+func (c *Course) toDemo() demo.Course {
 	return demo.Course{
 		Id:     c.Id.Hex(),
 		Name:   c.Name,
 		Credit: c.Credit,
 	}
+}
+
+func (r *Repository) getCourses(oids []primitive.ObjectID) ([]demo.Course, error) {
+	var demoCourses []demo.Course
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": oids,
+		},
+	}
+	cur, err := r.db.Collection("courses").Find(context.TODO(), filter)
+	if err != nil {
+		return []demo.Course{}, err
+	}
+	for cur.Next(context.TODO()) {
+
+		// create a value into which the single document can be decoded
+		var c Course
+		err := cur.Decode(&c)
+		if err != nil {
+			return []demo.Course{}, err
+		}
+
+		demoCourses = append(demoCourses, c.toDemo())
+	}
+
+	return demoCourses, nil
+
 }

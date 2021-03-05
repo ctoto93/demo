@@ -11,40 +11,12 @@ import (
 )
 
 type Student struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty"`
-	CreatedAt time.Time          `bson:"created_at"`
-	UpdatedAt time.Time          `bson:"updated_at"`
-	Name      string             `bson:"name"`
-	Age       int                `bson:"age"`
-	Courses   []Course           `bson:"courses"`
-}
-
-func newStudentWithCourses(ds demo.Student) (Student, error) {
-	s, err := newStudent(ds)
-	if err != nil {
-		return s, nil
-	}
-
-	var courses []Course
-	if len(ds.Courses) > 0 {
-		for _, dc := range ds.Courses {
-			oid, err := primitive.ObjectIDFromHex(dc.Id)
-			if err != nil {
-				return Student{}, err
-			}
-
-			courses = append(courses, Course{
-				Id:        oid,
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-				Name:      dc.Name,
-			})
-		}
-	}
-
-	s.Courses = courses
-
-	return s, nil
+	Id        primitive.ObjectID   `bson:"_id,omitempty"`
+	CreatedAt time.Time            `bson:"created_at"`
+	UpdatedAt time.Time            `bson:"updated_at"`
+	Name      string               `bson:"name"`
+	Age       int                  `bson:"age"`
+	Courses   []primitive.ObjectID `bson:"courses"`
 }
 
 func newStudent(ds demo.Student) (Student, error) {
@@ -63,23 +35,24 @@ func newStudent(ds demo.Student) (Student, error) {
 		s.Id = oid
 	}
 
+	var courseIds []primitive.ObjectID
+	if len(ds.Courses) > 0 {
+		for _, dc := range ds.Courses {
+			oid, err := primitive.ObjectIDFromHex(dc.Id)
+			if err != nil {
+				return Student{}, err
+			}
+
+			courseIds = append(courseIds, oid)
+		}
+	}
+
+	s.Courses = courseIds
+
 	return s, nil
 }
 
-func (s *Student) toDemoWithCourses() demo.Student {
-	ds := s.toDemoWithoutCourses()
-
-	var courses []demo.Course
-	for _, c := range s.Courses {
-		courses = append(courses, c.toDemoWithoutStudents())
-	}
-
-	ds.Courses = courses
-
-	return ds
-}
-
-func (s *Student) toDemoWithoutCourses() demo.Student {
+func (s *Student) toDemo() demo.Student {
 	return demo.Student{
 		Id:   s.Id.Hex(),
 		Name: s.Name,
@@ -87,54 +60,45 @@ func (s *Student) toDemoWithoutCourses() demo.Student {
 	}
 }
 
-func (s *Student) buildCoursesBsonArray() bson.A {
-	var res bson.A
-	for _, c := range s.Courses {
-		res = append(res, c.Id)
-	}
-
-	return res
-}
-
-func (s *Student) buildStudentBsonDoc() bson.D {
-	return bson.D{
-		{"name", s.Name},
-		{"age", s.Age},
-		{"courses", s.buildCoursesBsonArray()},
-	}
-}
-
 func (r *Repository) GetStudent(id string) (demo.Student, error) {
-	var s Student
+	var student Student
+	var demoStudent demo.Student
+
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return demo.Student{}, err
 	}
 
-	err = r.db.Collection("students").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&s)
+	student, err = r.getStudentByObjectId(oid)
 	if err != nil {
 		return demo.Student{}, err
 	}
 
-	for i, c := range s.Courses {
-		err = r.db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": c.Id}).Decode(&c)
+	demoStudent = student.toDemo()
+	if len(student.Courses) > 0 {
+		demoStudent.Courses, err = r.getCourses(student.Courses)
 		if err != nil {
 			return demo.Student{}, err
 		}
-		s.Courses[i] = c
 	}
 
-	return s.toDemoWithCourses(), nil
+	return demoStudent, nil
+}
+
+func (r *Repository) getStudentByObjectId(oid primitive.ObjectID) (Student, error) {
+	var s Student
+	err := r.db.Collection("students").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&s)
+	return s, err
 }
 
 func (r *Repository) AddStudent(ds *demo.Student) error {
 
-	s, err := newStudentWithCourses(*ds)
+	s, err := newStudent(*ds)
 	if err != nil {
 		return err
 	}
 
-	res, err := r.db.Collection("students").InsertOne(context.TODO(), s.buildStudentBsonDoc())
+	res, err := r.db.Collection("students").InsertOne(context.TODO(), s)
 	if err != nil {
 		return err
 	}
@@ -149,14 +113,14 @@ func (r *Repository) AddStudent(ds *demo.Student) error {
 }
 
 func (r *Repository) EditStudent(ds *demo.Student) error {
-	s, err := newStudentWithCourses(*ds)
+	s, err := newStudent(*ds)
 	if err != nil {
 		return err
 	}
 
 	filter := bson.D{{"_id", s.Id}}
 	update := bson.D{
-		{"$set", s.buildStudentBsonDoc()},
+		{"$set", s},
 	}
 	_, err = r.db.Collection("students").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
