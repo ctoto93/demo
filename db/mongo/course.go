@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/ctoto93/demo"
-	"github.com/davecgh/go-spew/spew"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -34,7 +33,7 @@ func newCourse(dc demo.Course) (Course, error) {
 	}
 
 	var studentsIds []primitive.ObjectID
-	if len(c.Students) > 0 {
+	if len(dc.Students) > 0 {
 		for _, ds := range dc.Students {
 			oid, err := primitive.ObjectIDFromHex(ds.Id)
 			if err != nil {
@@ -85,9 +84,10 @@ func (r *Repository) getCourses(oids []primitive.ObjectID) ([]demo.Course, error
 }
 
 func (r *Repository) getCourseByObjectId(oid primitive.ObjectID) (Course, error) {
-	return Course{}, nil
+	var c Course
+	err := r.db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
+	return c, err
 }
-
 func (r *Repository) GetCourse(id string) (demo.Course, error) {
 	var c Course
 	oid, err := primitive.ObjectIDFromHex(id)
@@ -99,20 +99,36 @@ func (r *Repository) GetCourse(id string) (demo.Course, error) {
 		return demo.Course{}, err
 	}
 
-	dc := c.toDemo()
-	spew.Dump("xxxxx", c.Students)
+	demoCourse := c.toDemo()
+
 	if len(c.Students) > 0 {
 		demoStudents, err := r.getStudents(c.Students)
 		if err != nil {
 			return demo.Course{}, err
 		}
-
-		dc.Students = demoStudents
+		demoCourse.Students = demoStudents
 	}
-	return dc, nil
+
+	return demoCourse, nil
 }
 
-func (r *Repository) AddCourse(c *demo.Course) error {
+func (r *Repository) AddCourse(dc *demo.Course) error {
+	c, err := newCourse(*dc)
+	if err != nil {
+		return err
+	}
+
+	res, err := r.db.Collection("courses").InsertOne(context.TODO(), c)
+	if err != nil {
+		return err
+	}
+
+	if oid, ok := res.InsertedID.(primitive.ObjectID); ok {
+		c.Id = oid
+	}
+
+	dc.Id = c.Id.Hex()
+
 	return nil
 }
 
