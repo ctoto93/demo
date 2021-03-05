@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/ctoto93/demo"
@@ -132,7 +133,20 @@ func (r *Repository) AddCourse(dc *demo.Course) error {
 	return nil
 }
 
-func (r *Repository) EditCourse(c *demo.Course) error {
+func (r *Repository) EditCourse(dc *demo.Course) error {
+	c, err := newCourse(*dc)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{{"_id", c.Id}}
+	update := bson.D{
+		{"$set", c},
+	}
+	_, err = r.db.Collection("courses").UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return nil
 }
 
