@@ -151,5 +151,15 @@ func (r *Repository) EditCourse(dc *demo.Course) error {
 }
 
 func (r *Repository) DeleteCourse(id string) error {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Collection("courses").DeleteOne(context.TODO(), bson.M{"_id": oid})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return nil
 }
