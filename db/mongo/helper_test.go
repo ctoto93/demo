@@ -46,17 +46,10 @@ func (suite *MongoSuite) SetupTest() {
 	suite.repo = &Repository{db: suite.db}
 
 	c, err := newCourse(factory.NewCourse())
+	c.Id = primitive.NewObjectID()
 	if err != nil {
 		suite.T().Fatal(err)
 		return
-	}
-	res, err := suite.db.Collection("courses").InsertOne(context.TODO(), c)
-	if err != nil {
-		suite.T().Fatal(err)
-		return
-	}
-	if oid, ok := res.InsertedID.(primitive.ObjectID); ok {
-		c.Id = oid
 	}
 
 	s, err := newStudent((factory.NewStudent()))
@@ -64,15 +57,21 @@ func (suite *MongoSuite) SetupTest() {
 		suite.T().Fatal(err)
 		return
 	}
-	s.Courses = append(s.Courses, c.Id)
+	s.Id = primitive.NewObjectID()
 
-	res, err = suite.db.Collection("students").InsertOne(context.TODO(), s)
+	s.Courses = append(s.Courses, c.Id)
+	c.Students = append(c.Students, s.Id)
+
+	_, err = suite.db.Collection("courses").InsertOne(context.TODO(), c)
 	if err != nil {
 		suite.T().Fatal(err)
 		return
 	}
-	if oid, ok := res.InsertedID.(primitive.ObjectID); ok {
-		s.Id = oid
+
+	_, err = suite.db.Collection("students").InsertOne(context.TODO(), s)
+	if err != nil {
+		suite.T().Fatal(err)
+		return
 	}
 
 	suite.expectedStudent = s.toDemo()

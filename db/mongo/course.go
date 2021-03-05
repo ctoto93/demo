@@ -5,17 +5,18 @@ import (
 	"time"
 
 	"github.com/ctoto93/demo"
+	"github.com/davecgh/go-spew/spew"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Course struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty"`
-	CreatedAt time.Time          `bson:"created_at"`
-	UpdatedAt time.Time          `bson:"updated_at"`
-	Name      string             `bson:"name"`
-	Credit    int                `bson:"credit"`
-	Students  []Student          `bson:"students"`
+	Id        primitive.ObjectID   `bson:"_id,omitempty"`
+	CreatedAt time.Time            `bson:"created_at"`
+	UpdatedAt time.Time            `bson:"updated_at"`
+	Name      string               `bson:"name"`
+	Credit    int                  `bson:"credit"`
+	Students  []primitive.ObjectID `bson:"students"`
 }
 
 func newCourse(dc demo.Course) (Course, error) {
@@ -32,41 +33,20 @@ func newCourse(dc demo.Course) (Course, error) {
 		c.Id = oid
 	}
 
-	return c, nil
-}
+	var studentsIds []primitive.ObjectID
+	if len(c.Students) > 0 {
+		for _, ds := range dc.Students {
+			oid, err := primitive.ObjectIDFromHex(ds.Id)
+			if err != nil {
+				return Course{}, err
+			}
 
-func newCourseWithStudents(dc demo.Course) (Course, error) {
-	c, err := newCourse(dc)
-	if err != nil {
-		return c, err
-	}
-
-	var students []Student
-	for _, ds := range dc.Students {
-		s, err := newStudent(ds)
-		if err != nil {
-			return Course{}, err
+			studentsIds = append(studentsIds, oid)
 		}
-		students = append(students, s)
 	}
-	c.Students = students
+
+	c.Students = studentsIds
 	return c, nil
-}
-
-func (c *Course) toDemoWithStudents() demo.Course {
-	var students []demo.Student
-
-	for _, s := range c.Students {
-		students = append(students, s.toDemo())
-	}
-
-	return demo.Course{
-		Id:       c.Id.Hex(),
-		Name:     c.Name,
-		Credit:   c.Credit,
-		Students: students,
-	}
-
 }
 
 func (c *Course) toDemo() demo.Course {
@@ -102,4 +82,44 @@ func (r *Repository) getCourses(oids []primitive.ObjectID) ([]demo.Course, error
 
 	return demoCourses, nil
 
+}
+
+func (r *Repository) getCourseByObjectId(oid primitive.ObjectID) (Course, error) {
+	return Course{}, nil
+}
+
+func (r *Repository) GetCourse(id string) (demo.Course, error) {
+	var c Course
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return demo.Course{}, err
+	}
+	err = r.db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
+	if err != nil {
+		return demo.Course{}, err
+	}
+
+	dc := c.toDemo()
+	spew.Dump("xxxxx", c.Students)
+	if len(c.Students) > 0 {
+		demoStudents, err := r.getStudents(c.Students)
+		if err != nil {
+			return demo.Course{}, err
+		}
+
+		dc.Students = demoStudents
+	}
+	return dc, nil
+}
+
+func (r *Repository) AddCourse(c *demo.Course) error {
+	return nil
+}
+
+func (r *Repository) EditCourse(c *demo.Course) error {
+	return nil
+}
+
+func (r *Repository) DeleteCourse(id string) error {
+	return nil
 }

@@ -60,6 +60,32 @@ func (s *Student) toDemo() demo.Student {
 	}
 }
 
+func (r *Repository) getStudents(oids []primitive.ObjectID) ([]demo.Student, error) {
+	var demoStudents []demo.Student
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": oids,
+		},
+	}
+	cur, err := r.db.Collection("students").Find(context.TODO(), filter)
+	if err != nil {
+		return []demo.Student{}, err
+	}
+	for cur.Next(context.TODO()) {
+
+		// create a value into which the single document can be decoded
+		var s Student
+		err := cur.Decode(&s)
+		if err != nil {
+			return []demo.Student{}, err
+		}
+
+		demoStudents = append(demoStudents, s.toDemo())
+	}
+
+	return demoStudents, nil
+}
+
 func (r *Repository) GetStudent(id string) (demo.Student, error) {
 	var student Student
 	var demoStudent demo.Student
