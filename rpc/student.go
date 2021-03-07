@@ -4,20 +4,20 @@ import (
 	"context"
 
 	"github.com/ctoto93/demo"
-	"github.com/ctoto93/demo/demopb"
+	"github.com/ctoto93/demo/rpc/pb"
 	"github.com/mitchellh/mapstructure"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func (service *DemoService) GetStudent(ctx context.Context, id *wrapperspb.StringValue) (*demopb.Student, error) {
+func (service *DemoService) GetStudent(ctx context.Context, id *wrapperspb.StringValue) (*pb.Student, error) {
 	student, err := service.student.Get(id.Value)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var pbStudent demopb.Student
+	var pbStudent pb.Student
 	err = mapstructure.Decode(student, &pbStudent)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func (service *DemoService) GetStudent(ctx context.Context, id *wrapperspb.Strin
 	return &pbStudent, nil
 }
 
-func (service *DemoService) AddStudent(ctx context.Context, newStudent *demopb.Student) (*demopb.Student, error) {
+func (service *DemoService) AddStudent(ctx context.Context, newStudent *pb.Student) (*pb.Student, error) {
 	var demoStudent demo.Student
 	err := mapstructure.Decode(newStudent, &demoStudent)
 	if err != nil {
@@ -43,7 +43,7 @@ func (service *DemoService) AddStudent(ctx context.Context, newStudent *demopb.S
 	return newStudent, nil
 }
 
-func (service *DemoService) EditStudent(ctx context.Context, updateStudent *demopb.Student) (*demopb.Student, error) {
+func (service *DemoService) EditStudent(ctx context.Context, updateStudent *pb.Student) (*pb.Student, error) {
 	var demoStudent demo.Student
 	err := mapstructure.Decode(updateStudent, &demoStudent)
 	if err != nil {

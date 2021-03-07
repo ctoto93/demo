@@ -1,12 +1,12 @@
 package rpc
 
 import (
-	"github.com/ctoto93/demo/demopb"
+	"github.com/ctoto93/demo/rpc/pb"
 	"github.com/ctoto93/demo/service"
 )
 
 type DemoService struct {
-	demopb.UnimplementedDemoServiceServer
+	pb.UnimplementedDemoServiceServer
 	course  *service.Course
 	student *service.Student
 }

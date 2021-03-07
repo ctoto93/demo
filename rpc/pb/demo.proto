@@ -1,5 +1,5 @@
 syntax = "proto3";
-package demopb;
+package pb;
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
