@@ -1,0 +1,26 @@
+syntax = "proto3";
+package demopb;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+message Course {
+    string id = 1;
+    string name = 2;
+    int32 credit = 3;
+    repeated Student students = 4;
+}
+
+message Student {
+    string id = 1;
+    string name = 2;
+    int32 age = 3;
+    repeated Course courses = 4;
+}
+
+service DemoService {
+    rpc GetStudent(.google.protobuf.StringValue) returns (Student);
+    rpc AddStudent(Student) returns (Student);
+    rpc EditStudent(Student) returns (Student);
+    rpc DeleteStudent(.google.protobuf.StringValue) returns (google.protobuf.Empty);
+}

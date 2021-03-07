@@ -12,7 +12,7 @@ type Repository struct {
 	db *mongo.Database
 }
 
-func New(uri string, dbname string) *Repository {
+func NewRepository(uri string, dbname string) *Repository {
 
 	opts := options.Client().ApplyURI("mongodb://localhost:27017")
 	c, err := mongo.Connect(context.TODO(), opts)
