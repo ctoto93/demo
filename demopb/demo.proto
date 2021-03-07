@@ -23,4 +23,8 @@ service DemoService {
     rpc AddStudent(Student) returns (Student);
     rpc EditStudent(Student) returns (Student);
     rpc DeleteStudent(.google.protobuf.StringValue) returns (google.protobuf.Empty);
+    rpc GetCourse(.google.protobuf.StringValue) returns (Course);
+    rpc AddCourse(Course) returns (Course);
+    rpc EditCourse(Course) returns (Course);
+    rpc DeleteCourse(.google.protobuf.StringValue) returns (google.protobuf.Empty);
 }

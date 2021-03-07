@@ -195,7 +195,7 @@ var file_demopb_demo_proto_rawDesc = []byte{
 	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03, 0x61, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x07,
 	0x63, 0x6f, 0x75, 0x72, 0x73, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e,
 	0x64, 0x65, 0x6d, 0x6f, 0x70, 0x62, 0x2e, 0x43, 0x6f, 0x75, 0x72, 0x73, 0x65, 0x52, 0x07, 0x63,
-	0x6f, 0x75, 0x72, 0x73, 0x65, 0x73, 0x32, 0xf2, 0x01, 0x0a, 0x0b, 0x44, 0x65, 0x6d, 0x6f, 0x53,
+	0x6f, 0x75, 0x72, 0x73, 0x65, 0x73, 0x32, 0xce, 0x03, 0x0a, 0x0b, 0x44, 0x65, 0x6d, 0x6f, 0x53,
 	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3b, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x53, 0x74, 0x75,
 	0x64, 0x65, 0x6e, 0x74, 0x12, 0x1c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x56, 0x61, 0x6c,
@@ -210,8 +210,21 @@ var file_demopb_demo_proto_rawDesc = []byte{
 	0x75, 0x64, 0x65, 0x6e, 0x74, 0x12, 0x1c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x56, 0x61,
 	0x6c, 0x75, 0x65, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x39, 0x0a, 0x09, 0x47,
+	0x65, 0x74, 0x43, 0x6f, 0x75, 0x72, 0x73, 0x65, 0x12, 0x1c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x69, 0x6e,
+	0x67, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x1a, 0x0e, 0x2e, 0x64, 0x65, 0x6d, 0x6f, 0x70, 0x62, 0x2e,
+	0x43, 0x6f, 0x75, 0x72, 0x73, 0x65, 0x12, 0x2b, 0x0a, 0x09, 0x41, 0x64, 0x64, 0x43, 0x6f, 0x75,
+	0x72, 0x73, 0x65, 0x12, 0x0e, 0x2e, 0x64, 0x65, 0x6d, 0x6f, 0x70, 0x62, 0x2e, 0x43, 0x6f, 0x75,
+	0x72, 0x73, 0x65, 0x1a, 0x0e, 0x2e, 0x64, 0x65, 0x6d, 0x6f, 0x70, 0x62, 0x2e, 0x43, 0x6f, 0x75,
+	0x72, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x0a, 0x45, 0x64, 0x69, 0x74, 0x43, 0x6f, 0x75, 0x72, 0x73,
+	0x65, 0x12, 0x0e, 0x2e, 0x64, 0x65, 0x6d, 0x6f, 0x70, 0x62, 0x2e, 0x43, 0x6f, 0x75, 0x72, 0x73,
+	0x65, 0x1a, 0x0e, 0x2e, 0x64, 0x65, 0x6d, 0x6f, 0x70, 0x62, 0x2e, 0x43, 0x6f, 0x75, 0x72, 0x73,
+	0x65, 0x12, 0x44, 0x0a, 0x0c, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x6f, 0x75, 0x72, 0x73,
+	0x65, 0x12, 0x1c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x1a,
+	0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -234,21 +247,29 @@ var file_demopb_demo_proto_goTypes = []interface{}{
 	(*emptypb.Empty)(nil),          // 3: google.protobuf.Empty
 }
 var file_demopb_demo_proto_depIdxs = []int32{
-	1, // 0: demopb.Course.students:type_name -> demopb.Student
-	0, // 1: demopb.Student.courses:type_name -> demopb.Course
-	2, // 2: demopb.DemoService.GetStudent:input_type -> google.protobuf.StringValue
-	1, // 3: demopb.DemoService.AddStudent:input_type -> demopb.Student
-	1, // 4: demopb.DemoService.EditStudent:input_type -> demopb.Student
-	2, // 5: demopb.DemoService.DeleteStudent:input_type -> google.protobuf.StringValue
-	1, // 6: demopb.DemoService.GetStudent:output_type -> demopb.Student
-	1, // 7: demopb.DemoService.AddStudent:output_type -> demopb.Student
-	1, // 8: demopb.DemoService.EditStudent:output_type -> demopb.Student
-	3, // 9: demopb.DemoService.DeleteStudent:output_type -> google.protobuf.Empty
-	6, // [6:10] is the sub-list for method output_type
-	2, // [2:6] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	1,  // 0: demopb.Course.students:type_name -> demopb.Student
+	0,  // 1: demopb.Student.courses:type_name -> demopb.Course
+	2,  // 2: demopb.DemoService.GetStudent:input_type -> google.protobuf.StringValue
+	1,  // 3: demopb.DemoService.AddStudent:input_type -> demopb.Student
+	1,  // 4: demopb.DemoService.EditStudent:input_type -> demopb.Student
+	2,  // 5: demopb.DemoService.DeleteStudent:input_type -> google.protobuf.StringValue
+	2,  // 6: demopb.DemoService.GetCourse:input_type -> google.protobuf.StringValue
+	0,  // 7: demopb.DemoService.AddCourse:input_type -> demopb.Course
+	0,  // 8: demopb.DemoService.EditCourse:input_type -> demopb.Course
+	2,  // 9: demopb.DemoService.DeleteCourse:input_type -> google.protobuf.StringValue
+	1,  // 10: demopb.DemoService.GetStudent:output_type -> demopb.Student
+	1,  // 11: demopb.DemoService.AddStudent:output_type -> demopb.Student
+	1,  // 12: demopb.DemoService.EditStudent:output_type -> demopb.Student
+	3,  // 13: demopb.DemoService.DeleteStudent:output_type -> google.protobuf.Empty
+	0,  // 14: demopb.DemoService.GetCourse:output_type -> demopb.Course
+	0,  // 15: demopb.DemoService.AddCourse:output_type -> demopb.Course
+	0,  // 16: demopb.DemoService.EditCourse:output_type -> demopb.Course
+	3,  // 17: demopb.DemoService.DeleteCourse:output_type -> google.protobuf.Empty
+	10, // [10:18] is the sub-list for method output_type
+	2,  // [2:10] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_demopb_demo_proto_init() }
@@ -318,6 +339,10 @@ type DemoServiceClient interface {
 	AddStudent(ctx context.Context, in *Student, opts ...grpc.CallOption) (*Student, error)
 	EditStudent(ctx context.Context, in *Student, opts ...grpc.CallOption) (*Student, error)
 	DeleteStudent(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetCourse(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*Course, error)
+	AddCourse(ctx context.Context, in *Course, opts ...grpc.CallOption) (*Course, error)
+	EditCourse(ctx context.Context, in *Course, opts ...grpc.CallOption) (*Course, error)
+	DeleteCourse(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type demoServiceClient struct {
@@ -364,12 +389,52 @@ func (c *demoServiceClient) DeleteStudent(ctx context.Context, in *wrapperspb.St
 	return out, nil
 }
 
+func (c *demoServiceClient) GetCourse(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*Course, error) {
+	out := new(Course)
+	err := c.cc.Invoke(ctx, "/demopb.DemoService/GetCourse", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoServiceClient) AddCourse(ctx context.Context, in *Course, opts ...grpc.CallOption) (*Course, error) {
+	out := new(Course)
+	err := c.cc.Invoke(ctx, "/demopb.DemoService/AddCourse", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoServiceClient) EditCourse(ctx context.Context, in *Course, opts ...grpc.CallOption) (*Course, error) {
+	out := new(Course)
+	err := c.cc.Invoke(ctx, "/demopb.DemoService/EditCourse", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoServiceClient) DeleteCourse(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/demopb.DemoService/DeleteCourse", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DemoServiceServer is the server API for DemoService service.
 type DemoServiceServer interface {
 	GetStudent(context.Context, *wrapperspb.StringValue) (*Student, error)
 	AddStudent(context.Context, *Student) (*Student, error)
 	EditStudent(context.Context, *Student) (*Student, error)
 	DeleteStudent(context.Context, *wrapperspb.StringValue) (*emptypb.Empty, error)
+	GetCourse(context.Context, *wrapperspb.StringValue) (*Course, error)
+	AddCourse(context.Context, *Course) (*Course, error)
+	EditCourse(context.Context, *Course) (*Course, error)
+	DeleteCourse(context.Context, *wrapperspb.StringValue) (*emptypb.Empty, error)
 }
 
 // UnimplementedDemoServiceServer can be embedded to have forward compatible implementations.
@@ -387,6 +452,18 @@ func (*UnimplementedDemoServiceServer) EditStudent(context.Context, *Student) (*
 }
 func (*UnimplementedDemoServiceServer) DeleteStudent(context.Context, *wrapperspb.StringValue) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteStudent not implemented")
+}
+func (*UnimplementedDemoServiceServer) GetCourse(context.Context, *wrapperspb.StringValue) (*Course, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCourse not implemented")
+}
+func (*UnimplementedDemoServiceServer) AddCourse(context.Context, *Course) (*Course, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCourse not implemented")
+}
+func (*UnimplementedDemoServiceServer) EditCourse(context.Context, *Course) (*Course, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditCourse not implemented")
+}
+func (*UnimplementedDemoServiceServer) DeleteCourse(context.Context, *wrapperspb.StringValue) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCourse not implemented")
 }
 
 func RegisterDemoServiceServer(s *grpc.Server, srv DemoServiceServer) {
@@ -465,6 +542,78 @@ func _DemoService_DeleteStudent_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DemoService_GetCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(wrapperspb.StringValue)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoServiceServer).GetCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/demopb.DemoService/GetCourse",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoServiceServer).GetCourse(ctx, req.(*wrapperspb.StringValue))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DemoService_AddCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Course)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoServiceServer).AddCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/demopb.DemoService/AddCourse",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoServiceServer).AddCourse(ctx, req.(*Course))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DemoService_EditCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Course)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoServiceServer).EditCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/demopb.DemoService/EditCourse",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoServiceServer).EditCourse(ctx, req.(*Course))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DemoService_DeleteCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(wrapperspb.StringValue)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoServiceServer).DeleteCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/demopb.DemoService/DeleteCourse",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoServiceServer).DeleteCourse(ctx, req.(*wrapperspb.StringValue))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _DemoService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "demopb.DemoService",
 	HandlerType: (*DemoServiceServer)(nil),
@@ -484,6 +633,22 @@ var _DemoService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteStudent",
 			Handler:    _DemoService_DeleteStudent_Handler,
+		},
+		{
+			MethodName: "GetCourse",
+			Handler:    _DemoService_GetCourse_Handler,
+		},
+		{
+			MethodName: "AddCourse",
+			Handler:    _DemoService_AddCourse_Handler,
+		},
+		{
+			MethodName: "EditCourse",
+			Handler:    _DemoService_EditCourse_Handler,
+		},
+		{
+			MethodName: "DeleteCourse",
+			Handler:    _DemoService_DeleteCourse_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
