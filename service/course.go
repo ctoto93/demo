@@ -17,7 +17,11 @@ var (
 )
 
 type Course struct {
-	repository courseRepository
+	repository CourseRepository
+}
+
+func NewCourse(repo Repository) *Course {
+	return &Course{repository: repo}
 }
 
 func (cs *Course) Add(c *demo.Course) error {
@@ -31,7 +35,7 @@ func (cs *Course) Add(c *demo.Course) error {
 	return cs.repository.AddCourse(c)
 }
 
-func (cs *Course) Get(courseId int) (demo.Course, error) {
+func (cs *Course) Get(courseId string) (demo.Course, error) {
 	return cs.repository.GetCourse(courseId)
 }
 
@@ -39,6 +43,6 @@ func (cs *Course) Edit(c *demo.Course) error {
 	return cs.repository.EditCourse(c)
 }
 
-func (cs *Course) Delete(courseId int) error {
+func (cs *Course) Delete(courseId string) error {
 	return cs.repository.DeleteCourse(courseId)
 }

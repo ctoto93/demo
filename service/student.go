@@ -11,7 +11,11 @@ const StudentMaxCredits = 30
 var OverCreditErr = errors.New("Credit exceeding limit")
 
 type Student struct {
-	repository studentRepository
+	repository StudentRepository
+}
+
+func NewStudent(repo Repository) *Student {
+	return &Student{repository: repo}
 }
 
 func isOverCredit(courses []demo.Course) bool {
@@ -23,7 +27,7 @@ func isOverCredit(courses []demo.Course) bool {
 	return sum > StudentMaxCredits
 }
 
-func (ss *Student) Get(studentId int) (demo.Student, error) {
+func (ss *Student) Get(studentId string) (demo.Student, error) {
 	return ss.repository.GetStudent(studentId)
 }
 
@@ -38,6 +42,6 @@ func (ss *Student) Edit(s *demo.Student) error {
 	return ss.repository.EditStudent(s)
 }
 
-func (ss *Student) Delete(studentId int) error {
+func (ss *Student) Delete(studentId string) error {
 	return ss.repository.DeleteStudent(studentId)
 }

@@ -12,13 +12,13 @@ type CourseRepository struct {
 	mock.Mock
 }
 
-// AddCourse provides a mock function with given fields: s
-func (_m *CourseRepository) AddCourse(s *demo.Course) error {
-	ret := _m.Called(s)
+// AddCourse provides a mock function with given fields: c
+func (_m *CourseRepository) AddCourse(c *demo.Course) error {
+	ret := _m.Called(c)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*demo.Course) error); ok {
-		r0 = rf(s)
+		r0 = rf(c)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -27,11 +27,11 @@ func (_m *CourseRepository) AddCourse(s *demo.Course) error {
 }
 
 // DeleteCourse provides a mock function with given fields: id
-func (_m *CourseRepository) DeleteCourse(id int) error {
+func (_m *CourseRepository) DeleteCourse(id string) error {
 	ret := _m.Called(id)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int) error); ok {
+	if rf, ok := ret.Get(0).(func(string) error); ok {
 		r0 = rf(id)
 	} else {
 		r0 = ret.Error(0)
@@ -40,13 +40,13 @@ func (_m *CourseRepository) DeleteCourse(id int) error {
 	return r0
 }
 
-// EditCourse provides a mock function with given fields: s
-func (_m *CourseRepository) EditCourse(s *demo.Course) error {
-	ret := _m.Called(s)
+// EditCourse provides a mock function with given fields: c
+func (_m *CourseRepository) EditCourse(c *demo.Course) error {
+	ret := _m.Called(c)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*demo.Course) error); ok {
-		r0 = rf(s)
+		r0 = rf(c)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -55,18 +55,18 @@ func (_m *CourseRepository) EditCourse(s *demo.Course) error {
 }
 
 // GetCourse provides a mock function with given fields: id
-func (_m *CourseRepository) GetCourse(id int) (demo.Course, error) {
+func (_m *CourseRepository) GetCourse(id string) (demo.Course, error) {
 	ret := _m.Called(id)
 
 	var r0 demo.Course
-	if rf, ok := ret.Get(0).(func(int) demo.Course); ok {
+	if rf, ok := ret.Get(0).(func(string) demo.Course); ok {
 		r0 = rf(id)
 	} else {
 		r0 = ret.Get(0).(demo.Course)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int) error); ok {
+	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(id)
 	} else {
 		r1 = ret.Error(1)

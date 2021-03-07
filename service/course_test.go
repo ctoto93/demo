@@ -21,15 +21,15 @@ func (suite *CourseServiceSuite) SetupTest() {
 
 func (suite *CourseServiceSuite) TestGetCourse() {
 	c := factory.NewCourse()
-	suite.repo.On("GetCourse", 1).Return(c, nil)
-	rc, err := suite.service.Get(1)
+	suite.repo.On("GetCourse", "1").Return(c, nil)
+	rc, err := suite.service.Get("1")
 	suite.Nil(err)
 	suite.Equal(c, rc)
 }
 
 func (suite *CourseServiceSuite) TestDeleteCourse() {
-	suite.repo.On("DeleteCourse", 1).Return(nil)
-	err := suite.service.Delete(1)
+	suite.repo.On("DeleteCourse", "1").Return(nil)
+	err := suite.service.Delete("1")
 	suite.Nil(err)
 	suite.repo.AssertExpectations(suite.T())
 }
