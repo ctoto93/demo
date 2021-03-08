@@ -1,6 +1,10 @@
 package demo
 
-import "time"
+import (
+	"time"
+
+	"github.com/mitchellh/mapstructure"
+)
 
 type Student struct {
 	Id        string    `json:"id"`
@@ -18,4 +22,16 @@ type Course struct {
 	Students  []Student `json:"students,omitempty"`
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
+}
+
+func ToStudent(in interface{}) (Student, error) {
+	var s Student
+	err := mapstructure.Decode(in, &s)
+	return s, err
+}
+
+func ToCourse(in interface{}) (Course, error) {
+	var c Course
+	err := mapstructure.Decode(in, &c)
+	return c, err
 }
