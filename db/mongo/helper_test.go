@@ -43,7 +43,7 @@ func (suite *MongoSuite) SetupTest() {
 	var err error
 
 	suite.db = suite.client.Database(testDbName)
-	suite.repo = &Repository{db: suite.db}
+	suite.repo = &Repository{Db: suite.db}
 
 	c, err := newCourse(factory.NewCourse())
 	c.Id = primitive.NewObjectID()

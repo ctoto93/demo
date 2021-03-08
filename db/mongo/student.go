@@ -67,7 +67,7 @@ func (r *Repository) getStudents(oids []primitive.ObjectID) ([]demo.Student, err
 			"$in": oids,
 		},
 	}
-	cur, err := r.db.Collection("students").Find(context.TODO(), filter)
+	cur, err := r.Db.Collection("students").Find(context.TODO(), filter)
 	if err != nil {
 		return []demo.Student{}, err
 	}
@@ -113,7 +113,7 @@ func (r *Repository) GetStudent(id string) (demo.Student, error) {
 
 func (r *Repository) getStudentByObjectId(oid primitive.ObjectID) (Student, error) {
 	var s Student
-	err := r.db.Collection("students").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&s)
+	err := r.Db.Collection("students").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&s)
 	return s, err
 }
 
@@ -124,7 +124,7 @@ func (r *Repository) AddStudent(ds *demo.Student) error {
 		return err
 	}
 
-	res, err := r.db.Collection("students").InsertOne(context.TODO(), s)
+	res, err := r.Db.Collection("students").InsertOne(context.TODO(), s)
 	if err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func (r *Repository) EditStudent(ds *demo.Student) error {
 	update := bson.D{
 		{"$set", s},
 	}
-	_, err = r.db.Collection("students").UpdateOne(context.TODO(), filter, update)
+	_, err = r.Db.Collection("students").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -162,7 +162,7 @@ func (r *Repository) DeleteStudent(id string) error {
 		return err
 	}
 
-	_, err = r.db.Collection("students").DeleteOne(context.TODO(), bson.M{"_id": oid})
+	_, err = r.Db.Collection("students").DeleteOne(context.TODO(), bson.M{"_id": oid})
 	if err != nil {
 		log.Fatal(err)
 	}

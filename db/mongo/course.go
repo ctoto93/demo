@@ -64,7 +64,7 @@ func (r *Repository) getCourses(oids []primitive.ObjectID) ([]demo.Course, error
 			"$in": oids,
 		},
 	}
-	cur, err := r.db.Collection("courses").Find(context.TODO(), filter)
+	cur, err := r.Db.Collection("courses").Find(context.TODO(), filter)
 	if err != nil {
 		return []demo.Course{}, err
 	}
@@ -86,7 +86,7 @@ func (r *Repository) getCourses(oids []primitive.ObjectID) ([]demo.Course, error
 
 func (r *Repository) getCourseByObjectId(oid primitive.ObjectID) (Course, error) {
 	var c Course
-	err := r.db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
+	err := r.Db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
 	return c, err
 }
 func (r *Repository) GetCourse(id string) (demo.Course, error) {
@@ -95,7 +95,7 @@ func (r *Repository) GetCourse(id string) (demo.Course, error) {
 	if err != nil {
 		return demo.Course{}, err
 	}
-	err = r.db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
+	err = r.Db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
 	if err != nil {
 		return demo.Course{}, err
 	}
@@ -119,7 +119,7 @@ func (r *Repository) AddCourse(dc *demo.Course) error {
 		return err
 	}
 
-	res, err := r.db.Collection("courses").InsertOne(context.TODO(), c)
+	res, err := r.Db.Collection("courses").InsertOne(context.TODO(), c)
 	if err != nil {
 		return err
 	}
@@ -143,7 +143,7 @@ func (r *Repository) EditCourse(dc *demo.Course) error {
 	update := bson.D{
 		{"$set", c},
 	}
-	_, err = r.db.Collection("courses").UpdateOne(context.TODO(), filter, update)
+	_, err = r.Db.Collection("courses").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -156,7 +156,7 @@ func (r *Repository) DeleteCourse(id string) error {
 		return err
 	}
 
-	_, err = r.db.Collection("courses").DeleteOne(context.TODO(), bson.M{"_id": oid})
+	_, err = r.Db.Collection("courses").DeleteOne(context.TODO(), bson.M{"_id": oid})
 	if err != nil {
 		log.Fatal(err)
 	}

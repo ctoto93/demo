@@ -9,7 +9,7 @@ import (
 )
 
 type Repository struct {
-	db *mongo.Database
+	Db *mongo.Database
 }
 
 func NewRepository(uri string, dbname string) *Repository {
@@ -30,6 +30,6 @@ func NewRepository(uri string, dbname string) *Repository {
 	fmt.Println("Connected to MongoDB!")
 
 	return &Repository{
-		db: c.Database(dbname),
+		Db: c.Database(dbname),
 	}
 }
