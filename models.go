@@ -15,6 +15,16 @@ type Student struct {
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
 
+func (s *Student) HasCourse(c Course) bool {
+	for i := range c.Students {
+		if s.Courses[i].Id == c.Id {
+			return true
+		}
+	}
+
+	return false
+}
+
 type Course struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
@@ -22,6 +32,16 @@ type Course struct {
 	Students  []Student `json:"students,omitempty"`
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
+}
+
+func (c *Course) HasStudent(s Student) bool {
+	for i := range c.Students {
+		if c.Students[i].Id == s.Id {
+			return true
+		}
+	}
+
+	return false
 }
 
 func ToStudent(in interface{}) (Student, error) {

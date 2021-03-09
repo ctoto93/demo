@@ -135,6 +135,20 @@ func (r *Repository) AddStudent(ds *demo.Student) error {
 
 	ds.Id = s.Id.Hex()
 
+	for i := range ds.Courses {
+		c, err := r.GetCourse(ds.Courses[i].Id)
+		if err != nil {
+			return err
+		}
+
+		if !c.HasStudent(*ds) {
+			c.Students = append(c.Students, *ds)
+			if err != r.EditCourse(&c) {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 

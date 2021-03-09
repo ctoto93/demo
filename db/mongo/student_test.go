@@ -53,4 +53,9 @@ func (suite *MongoSuite) TestAddStudent() {
 
 	suite.Require().Equal(ds.Id, s.toDemo().Id)
 	suite.Require().Equal(ds.Courses[0].Id, s.Courses[0].Hex())
+
+	dc, err := suite.repo.GetCourse(suite.expectedCourse.Id)
+	suite.Require().Nil(err)
+
+	suite.Require().True(dc.HasStudent(ds), "Student should be also in course.students array")
 }
