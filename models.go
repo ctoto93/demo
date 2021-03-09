@@ -16,7 +16,7 @@ type Student struct {
 }
 
 func (s *Student) HasCourse(c Course) bool {
-	for i := range c.Students {
+	for i := range s.Courses {
 		if s.Courses[i].Id == c.Id {
 			return true
 		}

@@ -129,6 +129,9 @@ func (r *Repository) AddCourse(dc *demo.Course) error {
 	}
 
 	dc.Id = c.Id.Hex()
+	if err := r.updateCourseStudents(*dc); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -147,6 +150,11 @@ func (r *Repository) EditCourse(dc *demo.Course) error {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	if err := r.updateCourseStudents(*dc); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -161,5 +169,22 @@ func (r *Repository) DeleteCourse(id string) error {
 		log.Fatal(err)
 	}
 
+	return nil
+}
+
+func (r *Repository) updateCourseStudents(dc demo.Course) error {
+	for i := range dc.Students {
+		s, err := r.GetStudent(dc.Students[i].Id)
+		if err != nil {
+			return err
+		}
+
+		if !s.HasCourse(dc) {
+			s.Courses = append(s.Courses, dc)
+			if err != r.EditStudent(&s) {
+				return err
+			}
+		}
+	}
 	return nil
 }
