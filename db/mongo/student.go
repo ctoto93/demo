@@ -117,6 +117,23 @@ func (r *Repository) getStudentByObjectId(oid primitive.ObjectID) (Student, erro
 	return s, err
 }
 
+func (r *Repository) updateStudentCourses(ds demo.Student) error {
+	for i := range ds.Courses {
+		c, err := r.GetCourse(ds.Courses[i].Id)
+		if err != nil {
+			return err
+		}
+
+		if !c.HasStudent(ds) {
+			c.Students = append(c.Students, ds)
+			if err != r.EditCourse(&c) {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func (r *Repository) AddStudent(ds *demo.Student) error {
 
 	s, err := newStudent(*ds)
@@ -134,19 +151,8 @@ func (r *Repository) AddStudent(ds *demo.Student) error {
 	}
 
 	ds.Id = s.Id.Hex()
-
-	for i := range ds.Courses {
-		c, err := r.GetCourse(ds.Courses[i].Id)
-		if err != nil {
-			return err
-		}
-
-		if !c.HasStudent(*ds) {
-			c.Students = append(c.Students, *ds)
-			if err != r.EditCourse(&c) {
-				return err
-			}
-		}
+	if err := r.updateStudentCourses(*ds); err != nil {
+		return err
 	}
 
 	return nil
@@ -165,6 +171,10 @@ func (r *Repository) EditStudent(ds *demo.Student) error {
 	_, err = r.Db.Collection("students").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if err := r.updateStudentCourses(*ds); err != nil {
+		return err
 	}
 
 	return nil

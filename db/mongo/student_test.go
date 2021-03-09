@@ -33,6 +33,20 @@ func (suite *MongoSuite) TestEditStudent() {
 	err = suite.db.Collection("students").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&s)
 	suite.Require().Nil(err)
 	suite.Require().Equal(s.Name, suite.expectedStudent.Name)
+
+	//check newly added course
+	nc := factory.NewCourse()
+	err = suite.repo.AddCourse(&nc)
+	suite.Require().Nil(err)
+
+	suite.expectedStudent.Courses = append(suite.expectedStudent.Courses, demo.Course{Id: nc.Id})
+	err = suite.repo.EditStudent(&suite.expectedStudent)
+	suite.Require().Nil(err)
+
+	dc, err := suite.repo.GetCourse(nc.Id)
+	suite.Require().Nil(err)
+
+	suite.Require().True(dc.HasStudent(suite.expectedStudent), "Student should be also in course.students array")
 }
 
 func (suite *MongoSuite) TestAddStudent() {
