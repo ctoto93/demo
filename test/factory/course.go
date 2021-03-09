@@ -13,6 +13,18 @@ func NewCourse() demo.Course {
 	return c
 }
 
+func NewCourseWithStudents(numStudents int) demo.Course {
+	c := NewCourse()
+
+	var students []demo.Student
+	for i := 0; i < numStudents; i++ {
+		s := NewStudent()
+		students = append(students, s)
+	}
+	c.Students = students
+	return c
+}
+
 func NewCourses(n int) []demo.Course {
 	courses := []demo.Course{}
 	for i := 0; i < n; i++ {

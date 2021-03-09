@@ -1,0 +1,172 @@
+package service
+
+import (
+	"context"
+	"log"
+	"testing"
+
+	mongoRepo "github.com/ctoto93/demo/db/mongo"
+	"github.com/ctoto93/demo/test/factory"
+	"github.com/stretchr/testify/suite"
+	"go.mongodb.org/mongo-driver/mongo"
+)
+
+type CourseMongoServiceSuite struct {
+	suite.Suite
+	client  *mongo.Client
+	db      *mongo.Database
+	repo    *mongoRepo.Repository
+	service *Course
+}
+
+func (suite *CourseMongoServiceSuite) SetupSuite() {
+	client, db, repo := InitTestMongoRepo(suite.T())
+	serv := NewCourse(repo)
+
+	suite.client = client
+	suite.db = db
+	suite.repo = repo
+	suite.service = serv
+}
+
+func (suite *CourseMongoServiceSuite) TearDownTest() {
+	ctx := context.Background()
+	err := suite.db.Drop(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func (suite *CourseMongoServiceSuite) TearDownSuite() {
+	ctx := context.Background()
+	err := suite.client.Disconnect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func TestCourseMongoService(t *testing.T) {
+	suite.Run(t, new(CourseMongoServiceSuite))
+}
+
+func (suite *CourseMongoServiceSuite) TestGetCourse() {
+
+	expected := factory.NewCourse()
+	err := suite.repo.AddCourse(&expected)
+	suite.Require().Nil(err)
+
+	actual, err := suite.service.Get(expected.Id)
+	suite.Require().Nil(err)
+	suite.Require().Equal(expected, actual)
+
+}
+
+func (suite *CourseMongoServiceSuite) TestAddCourse() {
+
+	expected := factory.NewCourseWithStudents(MinNumOfStudents)
+	for i := range expected.Students {
+		err := suite.repo.AddStudent(&expected.Students[i])
+		suite.Require().Nil(err)
+	}
+	err := suite.service.Add(&expected)
+	suite.Require().Nil(err)
+
+	actual, err := suite.repo.GetCourse(expected.Id)
+	suite.Require().Nil(err)
+	suite.Require().Equal(expected, actual)
+
+}
+
+func (suite *CourseMongoServiceSuite) TestAddLessThanMinStudents() {
+	c := factory.NewCourseWithStudents(MinNumOfStudents - 1)
+	for i := range c.Students {
+		err := suite.repo.AddStudent(&c.Students[i])
+		suite.Require().Nil(err)
+	}
+	err := suite.service.Add(&c)
+	suite.Equal(InsufficientStudentsErr, err, "Should return InsufficientStudents Err")
+
+}
+
+func (suite *CourseMongoServiceSuite) TestAddMoreThanMaxStudents() {
+
+	c := factory.NewCourseWithStudents(MaxNumOfStudents + 1)
+	for i := range c.Students {
+		err := suite.repo.AddStudent(&c.Students[i])
+		suite.Require().Nil(err)
+	}
+	err := suite.service.Add(&c)
+	suite.Require().Equal(ExceedingStudentsErr, err, "Should return ExceedingStudents Err")
+
+}
+
+func (suite *CourseMongoServiceSuite) TestEditCourse() {
+
+	expected := factory.NewCourseWithStudents(MinNumOfStudents)
+	for i := range expected.Students {
+		err := suite.repo.AddStudent(&expected.Students[i])
+		suite.Require().Nil(err)
+	}
+	err := suite.repo.AddCourse(&expected)
+	suite.Require().Nil(err)
+
+	expected.Name = "Edit"
+	expected.Credit -= 1
+
+	err = suite.service.Edit(&expected)
+	suite.Require().Nil(err)
+
+	actual, err := suite.repo.GetCourse(expected.Id)
+	suite.Require().Nil(err)
+	suite.Require().Equal(expected, actual)
+
+}
+
+func (suite *CourseMongoServiceSuite) TestEditCourseLessThanMinStudents() {
+
+	expected := factory.NewCourseWithStudents(MinNumOfStudents)
+	for i := range expected.Students {
+		err := suite.repo.AddStudent(&expected.Students[i])
+		suite.Require().Nil(err)
+	}
+	err := suite.repo.AddCourse(&expected)
+	suite.Require().Nil(err)
+
+	expected.Students = expected.Students[:MinNumOfStudents-1]
+
+	err = suite.service.Edit(&expected)
+	suite.Equal(InsufficientStudentsErr, err, "Should return InsufficientStudentsErr")
+
+}
+
+func (suite *CourseMongoServiceSuite) TestEditCourseMoreThanMaxStudents() {
+
+	expected := factory.NewCourseWithStudents(MaxNumOfStudents)
+	for i := range expected.Students {
+		err := suite.repo.AddStudent(&expected.Students[i])
+		suite.Require().Nil(err)
+	}
+
+	newStud := factory.NewStudent()
+	err := suite.repo.AddStudent(&newStud)
+	suite.Require().Nil(err)
+
+	expected.Students = append(expected.Students, newStud)
+	err = suite.service.Edit(&expected)
+	suite.Equal(ExceedingStudentsErr, err, "Should return ExceedingStudentsErr")
+
+}
+
+func (suite *CourseMongoServiceSuite) TestDeleteCourse() {
+
+	expected := factory.NewCourse()
+	err := suite.repo.AddCourse(&expected)
+	suite.Require().Nil(err)
+
+	err = suite.service.Delete(expected.Id)
+	suite.Require().Nil(err)
+
+	_, err = suite.repo.GetCourse(expected.Id)
+	suite.Require().Equal(err, mongo.ErrNoDocuments)
+
+}
