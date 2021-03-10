@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/ctoto93/demo"
-	"github.com/ctoto93/demo/db/mongo"
 	"github.com/ctoto93/demo/rpc/pb"
 	"github.com/ctoto93/demo/service"
 	"github.com/ctoto93/demo/test/factory"
@@ -14,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createStudents(t *testing.T, repo *mongo.Repository, num int) []demo.Student {
+func createStudents(t *testing.T, repo service.Repository, num int) []demo.Student {
 	var students []demo.Student
 	for i := 0; i < num; i++ {
 		s := factory.NewStudent()

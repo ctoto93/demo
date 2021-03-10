@@ -59,14 +59,14 @@ func (c *Course) toDemo() demo.Course {
 	}
 }
 
-func (r *Repository) getCourses(oids []primitive.ObjectID) ([]demo.Course, error) {
+func (r *repository) getCourses(oids []primitive.ObjectID) ([]demo.Course, error) {
 	var demoCourses []demo.Course
 	filter := bson.M{
 		"_id": bson.M{
 			"$in": oids,
 		},
 	}
-	cur, err := r.Db.Collection("courses").Find(context.TODO(), filter)
+	cur, err := r.db.Collection("courses").Find(context.TODO(), filter)
 	if err != nil {
 		return []demo.Course{}, err
 	}
@@ -86,18 +86,18 @@ func (r *Repository) getCourses(oids []primitive.ObjectID) ([]demo.Course, error
 
 }
 
-func (r *Repository) getCourseByObjectId(oid primitive.ObjectID) (Course, error) {
+func (r *repository) getCourseByObjectId(oid primitive.ObjectID) (Course, error) {
 	var c Course
-	err := r.Db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
+	err := r.db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
 	return c, err
 }
-func (r *Repository) GetCourse(id string) (demo.Course, error) {
+func (r *repository) GetCourse(id string) (demo.Course, error) {
 	var c Course
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return demo.Course{}, err
 	}
-	err = r.Db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
+	err = r.db.Collection("courses").FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&c)
 	if err != nil {
 		return demo.Course{}, err
 	}
@@ -115,13 +115,13 @@ func (r *Repository) GetCourse(id string) (demo.Course, error) {
 	return demoCourse, nil
 }
 
-func (r *Repository) AddCourse(dc *demo.Course) error {
+func (r *repository) AddCourse(dc *demo.Course) error {
 	c, err := newCourse(*dc)
 	if err != nil {
 		return err
 	}
 
-	res, err := r.Db.Collection("courses").InsertOne(context.TODO(), c)
+	res, err := r.db.Collection("courses").InsertOne(context.TODO(), c)
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func (r *Repository) AddCourse(dc *demo.Course) error {
 	return nil
 }
 
-func (r *Repository) EditCourse(dc *demo.Course) error {
+func (r *repository) EditCourse(dc *demo.Course) error {
 	updatedCourse, err := newCourse(*dc)
 	if err != nil {
 		return err
@@ -154,7 +154,7 @@ func (r *Repository) EditCourse(dc *demo.Course) error {
 	update := bson.D{
 		{"$set", updatedCourse},
 	}
-	_, err = r.Db.Collection("courses").UpdateOne(context.TODO(), filter, update)
+	_, err = r.db.Collection("courses").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -176,13 +176,13 @@ func (r *Repository) EditCourse(dc *demo.Course) error {
 	return nil
 }
 
-func (r *Repository) DeleteCourse(id string) error {
+func (r *repository) DeleteCourse(id string) error {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 
-	_, err = r.Db.Collection("courses").DeleteOne(context.TODO(), bson.M{"_id": oid})
+	_, err = r.db.Collection("courses").DeleteOne(context.TODO(), bson.M{"_id": oid})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -190,7 +190,7 @@ func (r *Repository) DeleteCourse(id string) error {
 	return nil
 }
 
-func (r *Repository) removeCourseForStudents(courseId primitive.ObjectID, oids []primitive.ObjectID) error {
+func (r *repository) removeCourseForStudents(courseId primitive.ObjectID, oids []primitive.ObjectID) error {
 	filter := bson.M{
 		"_id": bson.M{
 			"$in": oids,
@@ -202,11 +202,11 @@ func (r *Repository) removeCourseForStudents(courseId primitive.ObjectID, oids [
 			"courses": courseId,
 		},
 	}
-	_, err := r.Db.Collection("students").UpdateMany(context.Background(), filter, update)
+	_, err := r.db.Collection("students").UpdateMany(context.Background(), filter, update)
 	return err
 }
 
-func (r *Repository) addCourseForStudents(courseId primitive.ObjectID, oids []primitive.ObjectID) error {
+func (r *repository) addCourseForStudents(courseId primitive.ObjectID, oids []primitive.ObjectID) error {
 	filter := bson.M{
 		"_id": bson.M{
 			"$in": oids,
@@ -219,7 +219,7 @@ func (r *Repository) addCourseForStudents(courseId primitive.ObjectID, oids []pr
 		},
 	}
 
-	_, err := r.Db.Collection("students").UpdateMany(context.Background(), filter, update)
+	_, err := r.db.Collection("students").UpdateMany(context.Background(), filter, update)
 	return err
 }
 

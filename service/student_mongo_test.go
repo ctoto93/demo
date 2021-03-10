@@ -5,7 +5,6 @@ import (
 	"log"
 	"testing"
 
-	mongoRepo "github.com/ctoto93/demo/db/mongo"
 	"github.com/ctoto93/demo/service"
 	"github.com/ctoto93/demo/test/factory"
 	"github.com/stretchr/testify/suite"
@@ -16,8 +15,8 @@ type StudentMongoServiceSuite struct {
 	suite.Suite
 	client  *mongo.Client
 	db      *mongo.Database
-	repo    *mongoRepo.Repository
 	service *service.Student
+	repo    service.Repository
 }
 
 func (suite *StudentMongoServiceSuite) SetupSuite() {

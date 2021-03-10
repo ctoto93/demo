@@ -28,7 +28,7 @@ const (
 
 var lis *bufconn.Listener
 
-func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, *mongoRepo.Repository) {
+func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, service.Repository) {
 	opts := options.Client().ApplyURI(testDbUri)
 	c, err := mongo.Connect(context.TODO(), opts)
 
@@ -37,7 +37,7 @@ func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, *mongoRepo
 	}
 
 	db := c.Database(testDbName)
-	repo := &mongoRepo.Repository{Db: db}
+	repo := mongoRepo.NewRepositoryWithDb(db)
 	return c, db, repo
 }
 
