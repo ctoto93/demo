@@ -7,8 +7,9 @@ import (
 
 func NewStudent() demo.Student {
 	return demo.Student{
-		Name: randomdata.FullName(randomdata.RandomGender),
-		Age:  randomdata.Number(18, 25),
+		Name:    randomdata.FullName(randomdata.RandomGender),
+		Age:     randomdata.Number(18, 25),
+		Courses: make([]demo.Course, 0),
 	}
 }
 

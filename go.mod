@@ -8,6 +8,7 @@ require (
 	github.com/bxcodec/faker/v3 v3.6.0 // indirect
 	github.com/d4l3k/go-pry v0.0.0-20181122210047-3e3af674fe57 // indirect
 	github.com/davecgh/go-spew v1.1.1
+	github.com/deckarep/golang-set v1.7.1
 	github.com/gin-gonic/gin v1.6.3 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/golang/protobuf v1.4.3

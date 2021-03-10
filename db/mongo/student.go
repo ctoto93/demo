@@ -11,12 +11,12 @@ import (
 )
 
 type Student struct {
-	Id        primitive.ObjectID   `bson:"_id,omitempty"`
-	CreatedAt time.Time            `bson:"created_at"`
-	UpdatedAt time.Time            `bson:"updated_at"`
-	Name      string               `bson:"name"`
-	Age       int                  `bson:"age"`
-	Courses   []primitive.ObjectID `bson:"courses"`
+	Id        primitive.ObjectID    `bson:"_id,omitempty"`
+	CreatedAt time.Time             `bson:"created_at"`
+	UpdatedAt time.Time             `bson:"updated_at"`
+	Name      string                `bson:"name"`
+	Age       int                   `bson:"age"`
+	Courses   *[]primitive.ObjectID `bson:"courses"`
 }
 
 func newStudent(ds demo.Student) (Student, error) {
@@ -35,7 +35,7 @@ func newStudent(ds demo.Student) (Student, error) {
 		s.Id = oid
 	}
 
-	var courseIds []primitive.ObjectID
+	coursesIds := make([]primitive.ObjectID, 0)
 	if len(ds.Courses) > 0 {
 		for _, dc := range ds.Courses {
 			oid, err := primitive.ObjectIDFromHex(dc.Id)
@@ -43,20 +43,21 @@ func newStudent(ds demo.Student) (Student, error) {
 				return Student{}, err
 			}
 
-			courseIds = append(courseIds, oid)
+			coursesIds = append(coursesIds, oid)
 		}
 	}
 
-	s.Courses = courseIds
+	s.Courses = &coursesIds
 
 	return s, nil
 }
 
 func (s *Student) toDemo() demo.Student {
 	return demo.Student{
-		Id:   s.Id.Hex(),
-		Name: s.Name,
-		Age:  s.Age,
+		Id:      s.Id.Hex(),
+		Name:    s.Name,
+		Age:     s.Age,
+		Courses: make([]demo.Course, 0),
 	}
 }
 
@@ -101,8 +102,8 @@ func (r *Repository) GetStudent(id string) (demo.Student, error) {
 	}
 
 	demoStudent = student.toDemo()
-	if len(student.Courses) > 0 {
-		demoStudent.Courses, err = r.getCourses(student.Courses)
+	if len(*student.Courses) > 0 {
+		demoStudent.Courses, err = r.getCourses(*student.Courses)
 		if err != nil {
 			return demo.Student{}, err
 		}

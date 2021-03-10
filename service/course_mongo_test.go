@@ -75,6 +75,12 @@ func (suite *CourseMongoServiceSuite) TestAddCourse() {
 	suite.Require().Nil(err)
 	suite.Require().Equal(expected, actual)
 
+	for i := range expected.Students {
+		s, err := suite.repo.GetStudent(expected.Students[i].Id)
+		suite.Require().Nil(err)
+		suite.Require().True(s.HasCourse(expected), "Should add course to the respective student")
+	}
+
 }
 
 func (suite *CourseMongoServiceSuite) TestAddLessThanMinStudents() {
@@ -113,12 +119,30 @@ func (suite *CourseMongoServiceSuite) TestEditCourse() {
 	expected.Name = "Edit"
 	expected.Credit -= 1
 
+	newStudent := factory.NewStudent()
+	err = suite.repo.AddStudent(&newStudent)
+	suite.Require().Nil(err)
+	expected.Students = append(expected.Students, newStudent)
+
 	err = suite.service.Edit(&expected)
 	suite.Require().Nil(err)
 
 	actual, err := suite.repo.GetCourse(expected.Id)
 	suite.Require().Nil(err)
 	suite.Require().Equal(expected, actual)
+
+	newStudent, err = suite.repo.GetStudent(newStudent.Id)
+	suite.Require().Nil(err)
+	suite.Require().True(newStudent.HasCourse(expected), "Added students should have the course")
+
+	expected.Students = expected.Students[:len(expected.Students)-1]
+	err = suite.service.Edit(&expected)
+	suite.Require().Nil(err)
+
+	removedStudent, err := suite.repo.GetStudent(newStudent.Id)
+
+	suite.Require().Nil(err)
+	suite.Require().False(removedStudent.HasCourse(expected), "Removed students should not have the course")
 
 }
 
