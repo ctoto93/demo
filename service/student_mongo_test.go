@@ -83,6 +83,19 @@ func (suite *StudentMongoServiceSuite) TestAddStudent() {
 
 }
 
+func (suite *StudentMongoServiceSuite) TestAddStudentExceedingCreditLimit() {
+	expected := factory.NewStudentWithCourses(1)
+	expected.Courses[0].Credit = 40
+	for i := range expected.Courses {
+		err := suite.repo.AddCourse(&expected.Courses[i])
+		suite.Require().Nil(err)
+	}
+
+	err := suite.service.Add(&expected)
+	suite.Require().Equal(OverCreditErr, err, "Should return OverCreditErr")
+
+}
+
 func (suite *StudentMongoServiceSuite) TestEditStudent() {
 
 	expected := factory.NewStudentWithCourses(1)
