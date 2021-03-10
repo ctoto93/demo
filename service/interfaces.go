@@ -52,6 +52,10 @@ func (*UnimplementedRepository) AddCourse(s *demo.Course) error {
 	return UnimplementedMethodErr
 }
 
+func (*UnimplementedRepository) EditCourse(s *demo.Course) error {
+	return UnimplementedMethodErr
+}
+
 func (*UnimplementedRepository) DeleteCourse(id string) error {
 	return UnimplementedMethodErr
 }

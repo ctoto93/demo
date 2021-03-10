@@ -37,6 +37,18 @@ func TestStudentMongoService(t *testing.T) {
 	suite.Run(t, &s)
 }
 
+func TestStudentSQLiteService(t *testing.T) {
+	tx, repo := InitTestSQLiteRepo(t)
+	serv := service.NewStudent(repo)
+	s := StudentServiceSuite{
+		service:          serv,
+		repo:             repo,
+		cleanUpDb:        buildSQLCleanUpFunc(tx),
+		disconnectClient: func() {},
+	}
+	suite.Run(t, &s)
+}
+
 func (suite *StudentServiceSuite) TestGetStudent() {
 
 	expected := factory.NewStudent()

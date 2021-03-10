@@ -1,17 +1,15 @@
-package sqlite
+package sql
 
 import (
 	"github.com/ctoto93/demo/service"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type repository struct {
 	service.UnimplementedRepository
-	db gorm.DB
+	db *gorm.DB
 }
 
-func NewRepository() *repository {
-	var db gorm.DB
+func NewRepository(db *gorm.DB) *repository {
 	return &repository{db: db}
-
 }

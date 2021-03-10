@@ -6,15 +6,31 @@ import (
 	"testing"
 
 	mongoRepo "github.com/ctoto93/demo/db/mongo"
+	"github.com/ctoto93/demo/db/sql"
 	"github.com/ctoto93/demo/service"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 const (
 	testDbUri  = "mongodb://localhost:27017"
 	testDbName = "demo_test"
 )
+
+func InitTestSQLiteRepo(t *testing.T) (*gorm.DB, service.Repository) {
+	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tx := db.Begin()
+	tx.AutoMigrate(sql.Course{}, sql.Student{})
+
+	repo := sql.NewRepository(tx)
+
+	return tx, repo
+}
 
 func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, service.Repository) {
 	opts := options.Client().ApplyURI(testDbUri)
@@ -27,6 +43,13 @@ func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, service.Re
 	db := c.Database(testDbName)
 	repo := mongoRepo.NewRepositoryWithDb(db)
 	return c, db, repo
+}
+
+func buildSQLCleanUpFunc(tx *gorm.DB) func() {
+	return func() {
+		tx.Rollback()
+	}
+
 }
 
 func buildMongoCleanUpFunc(db *mongo.Database) func() {

@@ -17,6 +17,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kamva/mgm/v3 v3.1.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/mattn/go-tty v0.0.3 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/mitchellh/mapstructure v1.4.1
@@ -33,4 +34,6 @@ require (
 	google.golang.org/grpc v1.27.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gorm.io/driver/sqlite v1.1.4
+	gorm.io/gorm v1.21.3
 )
