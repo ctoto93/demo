@@ -2,6 +2,7 @@ package service_test
 
 import (
 	"context"
+	"log"
 	"testing"
 
 	mongoRepo "github.com/ctoto93/demo/db/mongo"
@@ -24,6 +25,27 @@ func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, service.Re
 	}
 
 	db := c.Database(testDbName)
-	repo := &mongoRepo.NewRepositoryWithDb(db)
+	repo := mongoRepo.NewRepositoryWithDb(db)
 	return c, db, repo
+}
+
+func buildMongoCleanUpFunc(db *mongo.Database) func() {
+	return func() {
+		ctx := context.Background()
+		err := db.Drop(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+}
+
+func buildMongoClientDisconnectFunc(client *mongo.Client) func() {
+	return func() {
+		ctx := context.Background()
+		err := client.Disconnect(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }

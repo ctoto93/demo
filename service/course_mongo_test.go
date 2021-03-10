@@ -1,8 +1,6 @@
 package service_test
 
 import (
-	"context"
-	"log"
 	"testing"
 
 	"github.com/ctoto93/demo/service"
@@ -11,45 +9,35 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type CourseMongoServiceSuite struct {
+type CourseServiceSuite struct {
 	suite.Suite
-	client  *mongo.Client
-	db      *mongo.Database
-	repo    service.Repository
-	service *service.Course
+	repo             service.Repository
+	service          *service.Course
+	cleanUpDb        func()
+	disconnectClient func()
 }
 
-func (suite *CourseMongoServiceSuite) SetupSuite() {
-	client, db, repo := InitTestMongoRepo(suite.T())
-	serv := service.NewCourse(repo)
-
-	suite.client = client
-	suite.db = db
-	suite.repo = repo
-	suite.service = serv
+func (suite *CourseServiceSuite) TearDownTest() {
+	suite.cleanUpDb()
 }
 
-func (suite *CourseMongoServiceSuite) TearDownTest() {
-	ctx := context.Background()
-	err := suite.db.Drop(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func (suite *CourseMongoServiceSuite) TearDownSuite() {
-	ctx := context.Background()
-	err := suite.client.Disconnect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
+func (suite *CourseServiceSuite) TearDownSuite() {
+	suite.disconnectClient()
 }
 
 func TestCourseMongoService(t *testing.T) {
-	suite.Run(t, new(CourseMongoServiceSuite))
+	client, db, repo := InitTestMongoRepo(t)
+	serv := service.NewCourse(repo)
+	s := CourseServiceSuite{
+		service:          serv,
+		repo:             repo,
+		cleanUpDb:        buildMongoCleanUpFunc(db),
+		disconnectClient: buildMongoClientDisconnectFunc(client),
+	}
+	suite.Run(t, &s)
 }
 
-func (suite *CourseMongoServiceSuite) TestGetCourse() {
+func (suite *CourseServiceSuite) TestGetCourse() {
 
 	expected := factory.NewCourse()
 	err := suite.repo.AddCourse(&expected)
@@ -61,7 +49,7 @@ func (suite *CourseMongoServiceSuite) TestGetCourse() {
 
 }
 
-func (suite *CourseMongoServiceSuite) TestAddCourse() {
+func (suite *CourseServiceSuite) TestAddCourse() {
 
 	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
 	for i := range expected.Students {
@@ -83,7 +71,7 @@ func (suite *CourseMongoServiceSuite) TestAddCourse() {
 
 }
 
-func (suite *CourseMongoServiceSuite) TestAddLessThanMinStudents() {
+func (suite *CourseServiceSuite) TestAddLessThanMinStudents() {
 	c := factory.NewCourseWithStudents(service.MinNumOfStudents - 1)
 	for i := range c.Students {
 		err := suite.repo.AddStudent(&c.Students[i])
@@ -94,7 +82,7 @@ func (suite *CourseMongoServiceSuite) TestAddLessThanMinStudents() {
 
 }
 
-func (suite *CourseMongoServiceSuite) TestAddMoreThanMaxStudents() {
+func (suite *CourseServiceSuite) TestAddMoreThanMaxStudents() {
 
 	c := factory.NewCourseWithStudents(service.MaxNumOfStudents + 1)
 	for i := range c.Students {
@@ -106,7 +94,7 @@ func (suite *CourseMongoServiceSuite) TestAddMoreThanMaxStudents() {
 
 }
 
-func (suite *CourseMongoServiceSuite) TestEditCourse() {
+func (suite *CourseServiceSuite) TestEditCourse() {
 
 	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
 	for i := range expected.Students {
@@ -146,7 +134,7 @@ func (suite *CourseMongoServiceSuite) TestEditCourse() {
 
 }
 
-func (suite *CourseMongoServiceSuite) TestEditCourseLessThanMinStudents() {
+func (suite *CourseServiceSuite) TestEditCourseLessThanMinStudents() {
 
 	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
 	for i := range expected.Students {
@@ -163,7 +151,7 @@ func (suite *CourseMongoServiceSuite) TestEditCourseLessThanMinStudents() {
 
 }
 
-func (suite *CourseMongoServiceSuite) TestEditCourseMoreThanMaxStudents() {
+func (suite *CourseServiceSuite) TestEditCourseMoreThanMaxStudents() {
 
 	expected := factory.NewCourseWithStudents(service.MaxNumOfStudents)
 	for i := range expected.Students {
@@ -181,7 +169,7 @@ func (suite *CourseMongoServiceSuite) TestEditCourseMoreThanMaxStudents() {
 
 }
 
-func (suite *CourseMongoServiceSuite) TestDeleteCourse() {
+func (suite *CourseServiceSuite) TestDeleteCourse() {
 
 	expected := factory.NewCourse()
 	err := suite.repo.AddCourse(&expected)

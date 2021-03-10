@@ -1,8 +1,6 @@
 package service_test
 
 import (
-	"context"
-	"log"
 	"testing"
 
 	"github.com/ctoto93/demo/service"
@@ -11,45 +9,35 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type StudentMongoServiceSuite struct {
+type StudentServiceSuite struct {
 	suite.Suite
-	client  *mongo.Client
-	db      *mongo.Database
-	service *service.Student
-	repo    service.Repository
+	service          *service.Student
+	repo             service.Repository
+	cleanUpDb        func()
+	disconnectClient func()
 }
 
-func (suite *StudentMongoServiceSuite) SetupSuite() {
-	client, db, repo := InitTestMongoRepo(suite.T())
-	serv := service.NewStudent(repo)
-
-	suite.client = client
-	suite.db = db
-	suite.repo = repo
-	suite.service = serv
+func (suite *StudentServiceSuite) TearDownTest() {
+	suite.cleanUpDb()
 }
 
-func (suite *StudentMongoServiceSuite) TearDownTest() {
-	ctx := context.Background()
-	err := suite.db.Drop(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func (suite *StudentMongoServiceSuite) TearDownSuite() {
-	ctx := context.Background()
-	err := suite.client.Disconnect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
+func (suite *StudentServiceSuite) TearDownSuite() {
+	suite.disconnectClient()
 }
 
 func TestStudentMongoService(t *testing.T) {
-	suite.Run(t, new(StudentMongoServiceSuite))
+	client, db, repo := InitTestMongoRepo(t)
+	serv := service.NewStudent(repo)
+	s := StudentServiceSuite{
+		service:          serv,
+		repo:             repo,
+		cleanUpDb:        buildMongoCleanUpFunc(db),
+		disconnectClient: buildMongoClientDisconnectFunc(client),
+	}
+	suite.Run(t, &s)
 }
 
-func (suite *StudentMongoServiceSuite) TestGetStudent() {
+func (suite *StudentServiceSuite) TestGetStudent() {
 
 	expected := factory.NewStudent()
 	err := suite.repo.AddStudent(&expected)
@@ -61,7 +49,7 @@ func (suite *StudentMongoServiceSuite) TestGetStudent() {
 
 }
 
-func (suite *StudentMongoServiceSuite) TestAddStudent() {
+func (suite *StudentServiceSuite) TestAddStudent() {
 
 	expected := factory.NewStudentWithCourses(1)
 	for i := range expected.Courses {
@@ -83,7 +71,7 @@ func (suite *StudentMongoServiceSuite) TestAddStudent() {
 
 }
 
-func (suite *StudentMongoServiceSuite) TestAddStudentExceedingCreditLimit() {
+func (suite *StudentServiceSuite) TestAddStudentExceedingCreditLimit() {
 	expected := factory.NewStudentWithCourses(1)
 	expected.Courses[0].Credit = 40
 	for i := range expected.Courses {
@@ -96,7 +84,7 @@ func (suite *StudentMongoServiceSuite) TestAddStudentExceedingCreditLimit() {
 
 }
 
-func (suite *StudentMongoServiceSuite) TestEditStudent() {
+func (suite *StudentServiceSuite) TestEditStudent() {
 
 	expected := factory.NewStudentWithCourses(1)
 	for i := range expected.Courses {
@@ -136,7 +124,7 @@ func (suite *StudentMongoServiceSuite) TestEditStudent() {
 
 }
 
-func (suite *StudentMongoServiceSuite) TestDeleteStudent() {
+func (suite *StudentServiceSuite) TestDeleteStudent() {
 
 	expected := factory.NewStudent()
 	err := suite.repo.AddStudent(&expected)
