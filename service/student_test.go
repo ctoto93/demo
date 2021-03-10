@@ -6,7 +6,6 @@ import (
 	"github.com/ctoto93/demo/service"
 	"github.com/ctoto93/demo/test/factory"
 	"github.com/stretchr/testify/suite"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type StudentServiceSuite struct {
@@ -146,6 +145,6 @@ func (suite *StudentServiceSuite) TestDeleteStudent() {
 	suite.Require().Nil(err)
 
 	_, err = suite.repo.GetStudent(expected.Id)
-	suite.Require().Equal(err, mongo.ErrNoDocuments)
+	suite.Require().NotEmpty(err)
 
 }

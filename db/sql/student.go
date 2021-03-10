@@ -76,3 +76,11 @@ func (r *repository) AddStudent(ds *demo.Student) error {
 	return nil
 
 }
+
+func (r *repository) DeleteStudent(sid string) error {
+	id, err := strconv.Atoi(sid)
+	if err != nil {
+		return err
+	}
+	return r.db.Delete(&Student{}, id).Error
+}
