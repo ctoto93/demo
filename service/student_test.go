@@ -44,7 +44,7 @@ func TestStudentSQLiteService(t *testing.T) {
 		service:          serv,
 		repo:             repo,
 		cleanUpDb:        buildSQLCleanUpFunc(tx),
-		disconnectClient: func() {},
+		disconnectClient: buildSQLClientDisconnect(),
 	}
 	suite.Run(t, &s)
 }

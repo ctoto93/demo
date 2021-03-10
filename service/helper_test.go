@@ -3,6 +3,7 @@ package service_test
 import (
 	"context"
 	"log"
+	"os"
 	"testing"
 
 	mongoRepo "github.com/ctoto93/demo/db/mongo"
@@ -15,12 +16,13 @@ import (
 )
 
 const (
-	testDbUri  = "mongodb://localhost:27017"
-	testDbName = "demo_test"
+	testDbUri      = "mongodb://localhost:27017"
+	testDbName     = "demo_test"
+	testSQLitePath = "gorm.db"
 )
 
 func InitTestSQLiteRepo(t *testing.T) (*gorm.DB, service.Repository) {
-	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(testSQLitePath), &gorm.Config{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,6 +50,16 @@ func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, service.Re
 func buildSQLCleanUpFunc(tx *gorm.DB) func() {
 	return func() {
 		tx.Rollback()
+	}
+
+}
+
+func buildSQLClientDisconnect() func() {
+	return func() {
+		err := os.Remove(testSQLitePath)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 }
