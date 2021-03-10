@@ -63,7 +63,11 @@ func (suite *StudentMongoServiceSuite) TestGetStudent() {
 
 func (suite *StudentMongoServiceSuite) TestAddStudent() {
 
-	expected := factory.NewStudent()
+	expected := factory.NewStudentWithCourses(1)
+	for i := range expected.Courses {
+		err := suite.repo.AddCourse(&expected.Courses[i])
+		suite.Require().Nil(err)
+	}
 	err := suite.service.Add(&expected)
 	suite.Require().Nil(err)
 
@@ -71,17 +75,31 @@ func (suite *StudentMongoServiceSuite) TestAddStudent() {
 	suite.Require().Nil(err)
 	suite.Require().Equal(expected, actual)
 
+	for i := range expected.Courses {
+		c, err := suite.repo.GetCourse(expected.Courses[i].Id)
+		suite.Require().Nil(err)
+		suite.Require().True(c.HasStudent(expected), "Should add student to the respective course")
+	}
+
 }
 
 func (suite *StudentMongoServiceSuite) TestEditStudent() {
 
-	expected := factory.NewStudent()
-
+	expected := factory.NewStudentWithCourses(1)
+	for i := range expected.Courses {
+		err := suite.repo.AddCourse(&expected.Courses[i])
+		suite.Require().Nil(err)
+	}
 	err := suite.repo.AddStudent(&expected)
 	suite.Require().Nil(err)
 
 	expected.Name = "Edit"
 	expected.Age -= 1
+
+	newCourse := factory.NewCourse()
+	err = suite.repo.AddCourse(&newCourse)
+	suite.Require().Nil(err)
+	expected.Courses = append(expected.Courses, newCourse)
 
 	err = suite.service.Edit(&expected)
 	suite.Require().Nil(err)
@@ -89,6 +107,19 @@ func (suite *StudentMongoServiceSuite) TestEditStudent() {
 	actual, err := suite.repo.GetStudent(expected.Id)
 	suite.Require().Nil(err)
 	suite.Require().Equal(expected, actual)
+
+	newCourse, err = suite.repo.GetCourse(newCourse.Id)
+	suite.Require().Nil(err)
+	suite.Require().True(newCourse.HasStudent(expected), "Added courses should have the the student")
+
+	expected.Courses = expected.Courses[:len(expected.Courses)-1]
+	err = suite.service.Edit(&expected)
+	suite.Require().Nil(err)
+
+	removedCourse, err := suite.repo.GetCourse(newCourse.Id)
+
+	suite.Require().Nil(err)
+	suite.Require().False(removedCourse.HasStudent(expected), "Removed courses should not have the student")
 
 }
 

@@ -21,3 +21,15 @@ func NewStudents(n int) []demo.Student {
 
 	return students
 }
+
+func NewStudentWithCourses(numCourses int) demo.Student {
+	s := NewStudent()
+
+	var courses []demo.Course
+	for i := 0; i < numCourses; i++ {
+		c := NewCourse()
+		courses = append(courses, c)
+	}
+	s.Courses = courses
+	return s
+}

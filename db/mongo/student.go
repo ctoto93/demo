@@ -118,21 +118,37 @@ func (r *Repository) getStudentByObjectId(oid primitive.ObjectID) (Student, erro
 	return s, err
 }
 
-func (r *Repository) updateStudentCourses(ds demo.Student) error {
-	for i := range ds.Courses {
-		c, err := r.GetCourse(ds.Courses[i].Id)
-		if err != nil {
-			return err
-		}
-
-		if !c.HasStudent(ds) {
-			c.Students = append(c.Students, ds)
-			if err != r.EditCourse(&c) {
-				return err
-			}
-		}
+func (r *Repository) removeStudentForCourses(studentId primitive.ObjectID, courseIds []primitive.ObjectID) error {
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": courseIds,
+		},
 	}
-	return nil
+
+	update := bson.M{
+		"$pull": bson.M{
+			"students": studentId,
+		},
+	}
+	_, err := r.Db.Collection("courses").UpdateMany(context.Background(), filter, update)
+	return err
+}
+
+func (r *Repository) addStudentForCourses(studentId primitive.ObjectID, courseIds []primitive.ObjectID) error {
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": courseIds,
+		},
+	}
+
+	update := bson.M{
+		"$push": bson.M{
+			"students": studentId,
+		},
+	}
+
+	_, err := r.Db.Collection("courses").UpdateMany(context.Background(), filter, update)
+	return err
 }
 
 func (r *Repository) AddStudent(ds *demo.Student) error {
@@ -152,30 +168,44 @@ func (r *Repository) AddStudent(ds *demo.Student) error {
 	}
 
 	ds.Id = s.Id.Hex()
-	if err := r.updateStudentCourses(*ds); err != nil {
+	if err := r.addStudentForCourses(s.Id, *s.Courses); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func (r *Repository) EditStudent(ds *demo.Student) error {
-	s, err := newStudent(*ds)
+	updatedStudent, err := newStudent(*ds)
 	if err != nil {
 		return err
 	}
 
-	filter := bson.D{{"_id", s.Id}}
+	currentStudent, err := r.getStudentByObjectId(updatedStudent.Id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{{"_id", updatedStudent.Id}}
 	update := bson.D{
-		{"$set", s},
+		{"$set", updatedStudent},
 	}
 	_, err = r.Db.Collection("students").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := r.updateStudentCourses(*ds); err != nil {
-		return err
+	addedStudents, removedStudents, err := differenceObjectIDs(*currentStudent.Courses, *updatedStudent.Courses)
+
+	if len(addedStudents) > 0 {
+		if err := r.addStudentForCourses(currentStudent.Id, addedStudents); err != nil {
+			return err
+		}
+	}
+
+	if len(removedStudents) > 0 {
+		if err := r.removeStudentForCourses(currentStudent.Id, removedStudents); err != nil {
+			return err
+		}
 	}
 
 	return nil
