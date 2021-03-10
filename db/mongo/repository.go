@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ctoto93/demo/service"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -12,7 +13,7 @@ type Repository struct {
 	Db *mongo.Database
 }
 
-func NewRepository(uri string, dbname string) *Repository {
+func NewRepository(uri string, dbname string) service.Repository {
 
 	opts := options.Client().ApplyURI("mongodb://localhost:27017")
 	c, err := mongo.Connect(context.TODO(), opts)

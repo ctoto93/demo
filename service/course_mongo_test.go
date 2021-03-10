@@ -1,11 +1,11 @@
-package service
+package service_test
 
 import (
 	"context"
 	"log"
 	"testing"
 
-	mongoRepo "github.com/ctoto93/demo/db/mongo"
+	"github.com/ctoto93/demo/service"
 	"github.com/ctoto93/demo/test/factory"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,13 +15,13 @@ type CourseMongoServiceSuite struct {
 	suite.Suite
 	client  *mongo.Client
 	db      *mongo.Database
-	repo    *mongoRepo.Repository
-	service *Course
+	repo    service.Repository
+	service *service.Course
 }
 
 func (suite *CourseMongoServiceSuite) SetupSuite() {
 	client, db, repo := InitTestMongoRepo(suite.T())
-	serv := NewCourse(repo)
+	serv := service.NewCourse(repo)
 
 	suite.client = client
 	suite.db = db
@@ -63,7 +63,7 @@ func (suite *CourseMongoServiceSuite) TestGetCourse() {
 
 func (suite *CourseMongoServiceSuite) TestAddCourse() {
 
-	expected := factory.NewCourseWithStudents(MinNumOfStudents)
+	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
 	for i := range expected.Students {
 		err := suite.repo.AddStudent(&expected.Students[i])
 		suite.Require().Nil(err)
@@ -84,31 +84,31 @@ func (suite *CourseMongoServiceSuite) TestAddCourse() {
 }
 
 func (suite *CourseMongoServiceSuite) TestAddLessThanMinStudents() {
-	c := factory.NewCourseWithStudents(MinNumOfStudents - 1)
+	c := factory.NewCourseWithStudents(service.MinNumOfStudents - 1)
 	for i := range c.Students {
 		err := suite.repo.AddStudent(&c.Students[i])
 		suite.Require().Nil(err)
 	}
 	err := suite.service.Add(&c)
-	suite.Equal(InsufficientStudentsErr, err, "Should return InsufficientStudents Err")
+	suite.Equal(service.InsufficientStudentsErr, err, "Should return InsufficientStudents Err")
 
 }
 
 func (suite *CourseMongoServiceSuite) TestAddMoreThanMaxStudents() {
 
-	c := factory.NewCourseWithStudents(MaxNumOfStudents + 1)
+	c := factory.NewCourseWithStudents(service.MaxNumOfStudents + 1)
 	for i := range c.Students {
 		err := suite.repo.AddStudent(&c.Students[i])
 		suite.Require().Nil(err)
 	}
 	err := suite.service.Add(&c)
-	suite.Require().Equal(ExceedingStudentsErr, err, "Should return ExceedingStudents Err")
+	suite.Require().Equal(service.ExceedingStudentsErr, err, "Should return ExceedingStudents Err")
 
 }
 
 func (suite *CourseMongoServiceSuite) TestEditCourse() {
 
-	expected := factory.NewCourseWithStudents(MinNumOfStudents)
+	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
 	for i := range expected.Students {
 		err := suite.repo.AddStudent(&expected.Students[i])
 		suite.Require().Nil(err)
@@ -148,7 +148,7 @@ func (suite *CourseMongoServiceSuite) TestEditCourse() {
 
 func (suite *CourseMongoServiceSuite) TestEditCourseLessThanMinStudents() {
 
-	expected := factory.NewCourseWithStudents(MinNumOfStudents)
+	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
 	for i := range expected.Students {
 		err := suite.repo.AddStudent(&expected.Students[i])
 		suite.Require().Nil(err)
@@ -156,16 +156,16 @@ func (suite *CourseMongoServiceSuite) TestEditCourseLessThanMinStudents() {
 	err := suite.repo.AddCourse(&expected)
 	suite.Require().Nil(err)
 
-	expected.Students = expected.Students[:MinNumOfStudents-1]
+	expected.Students = expected.Students[:service.MinNumOfStudents-1]
 
 	err = suite.service.Edit(&expected)
-	suite.Equal(InsufficientStudentsErr, err, "Should return InsufficientStudentsErr")
+	suite.Equal(service.InsufficientStudentsErr, err, "Should return service.InsufficientStudentsErr")
 
 }
 
 func (suite *CourseMongoServiceSuite) TestEditCourseMoreThanMaxStudents() {
 
-	expected := factory.NewCourseWithStudents(MaxNumOfStudents)
+	expected := factory.NewCourseWithStudents(service.MaxNumOfStudents)
 	for i := range expected.Students {
 		err := suite.repo.AddStudent(&expected.Students[i])
 		suite.Require().Nil(err)
@@ -177,7 +177,7 @@ func (suite *CourseMongoServiceSuite) TestEditCourseMoreThanMaxStudents() {
 
 	expected.Students = append(expected.Students, newStud)
 	err = suite.service.Edit(&expected)
-	suite.Equal(ExceedingStudentsErr, err, "Should return ExceedingStudentsErr")
+	suite.Equal(service.ExceedingStudentsErr, err, "Should return service.ExceedingStudentsErr")
 
 }
 

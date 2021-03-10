@@ -1,4 +1,4 @@
-package service
+package service_test
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	mongoRepo "github.com/ctoto93/demo/db/mongo"
+	"github.com/ctoto93/demo/service"
 	"github.com/ctoto93/demo/test/factory"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,12 +17,12 @@ type StudentMongoServiceSuite struct {
 	client  *mongo.Client
 	db      *mongo.Database
 	repo    *mongoRepo.Repository
-	service *Student
+	service *service.Student
 }
 
 func (suite *StudentMongoServiceSuite) SetupSuite() {
 	client, db, repo := InitTestMongoRepo(suite.T())
-	serv := NewStudent(repo)
+	serv := service.NewStudent(repo)
 
 	suite.client = client
 	suite.db = db
@@ -92,7 +93,7 @@ func (suite *StudentMongoServiceSuite) TestAddStudentExceedingCreditLimit() {
 	}
 
 	err := suite.service.Add(&expected)
-	suite.Require().Equal(OverCreditErr, err, "Should return OverCreditErr")
+	suite.Require().Equal(service.OverCreditErr, err, "Should return OverCreditErr")
 
 }
 
