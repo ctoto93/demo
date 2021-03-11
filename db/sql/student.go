@@ -97,6 +97,25 @@ func (r *repository) AddStudent(ds *demo.Student) error {
 
 }
 
+func (r *repository) EditStudent(ds *demo.Student) error {
+
+	s, err := NewStudent(*ds)
+	if err != nil {
+		return err
+	}
+
+	if err := r.db.Save(&s).Error; err != nil {
+		return err
+	}
+
+	if err := r.db.Model(&s).Association("Courses").Replace(s.Courses); err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (r *repository) DeleteStudent(sid string) error {
 	id, err := strconv.Atoi(sid)
 	if err != nil {
