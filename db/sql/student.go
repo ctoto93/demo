@@ -8,15 +8,15 @@ import (
 )
 
 type Student struct {
-	Id        int       `gorm:"primarykey"`
-	Name      string    `json:"name"`
-	Age       int       `json:"age"`
-	Courses   *[]Course `json:"courses,omitempty" gorm:"many2many:user_languages;"`
+	ID        int      `gorm:"primarykey"`
+	Name      string   `json:"name"`
+	Age       int      `json:"age"`
+	Courses   []Course `json:"courses" gorm:"many2many:student_courses"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func newStudent(ds demo.Student) (Student, error) {
+func NewStudent(ds demo.Student) (Student, error) {
 	s := Student{
 		Name: ds.Name,
 		Age:  ds.Age,
@@ -27,22 +27,41 @@ func newStudent(ds demo.Student) (Student, error) {
 		if err != nil {
 			return Student{}, err
 		}
-		s.Id = id
+		s.ID = id
 	}
 
 	courses := make([]Course, 0)
-	s.Courses = &courses
+
+	if len(ds.Courses) > 0 {
+		for _, dc := range ds.Courses {
+			c, err := NewCourse(dc)
+			if err != nil {
+				return Student{}, err
+			}
+			courses = append(courses, c)
+		}
+	}
+
+	s.Courses = courses
 
 	return s, nil
 }
 
 func (s *Student) toDemo() demo.Student {
-	return demo.Student{
-		Id:      strconv.Itoa(s.Id),
+	ds := demo.Student{
+		Id:      strconv.Itoa(s.ID),
 		Name:    s.Name,
 		Age:     s.Age,
 		Courses: make([]demo.Course, 0),
 	}
+
+	if len(s.Courses) > 0 {
+		for _, dc := range s.Courses {
+			ds.Courses = append(ds.Courses, dc.toDemo())
+		}
+	}
+
+	return ds
 }
 
 func (r *repository) GetStudent(sid string) (demo.Student, error) {
@@ -53,7 +72,7 @@ func (r *repository) GetStudent(sid string) (demo.Student, error) {
 
 	var s Student
 
-	if err := r.db.First(&s, id).Error; err != nil {
+	if err := r.db.Preload("Courses").First(&s, id).Error; err != nil {
 		return demo.Student{}, err
 	}
 
@@ -63,7 +82,7 @@ func (r *repository) GetStudent(sid string) (demo.Student, error) {
 
 func (r *repository) AddStudent(ds *demo.Student) error {
 
-	s, err := newStudent(*ds)
+	s, err := NewStudent(*ds)
 	if err != nil {
 		return err
 	}
@@ -71,7 +90,8 @@ func (r *repository) AddStudent(ds *demo.Student) error {
 	if err := r.db.Create(&s).Error; err != nil {
 		return err
 	}
-	ds.Id = strconv.Itoa(s.Id)
+
+	ds.Id = strconv.Itoa(s.ID)
 
 	return nil
 
