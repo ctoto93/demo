@@ -6,7 +6,6 @@ import (
 	"github.com/ctoto93/demo/service"
 	"github.com/ctoto93/demo/test/factory"
 	"github.com/stretchr/testify/suite"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type CourseServiceSuite struct {
@@ -33,6 +32,18 @@ func TestCourseMongoService(t *testing.T) {
 		repo:             repo,
 		cleanUpDb:        buildMongoCleanUpFunc(db),
 		disconnectClient: buildMongoClientDisconnectFunc(client),
+	}
+	suite.Run(t, &s)
+}
+
+func TestCourseSQLiteService(t *testing.T) {
+	tx, repo := InitTestSQLiteRepo(t)
+	serv := service.NewCourse(repo)
+	s := CourseServiceSuite{
+		service:          serv,
+		repo:             repo,
+		cleanUpDb:        buildSQLCleanUpFunc(tx),
+		disconnectClient: buildSQLClientDisconnect(),
 	}
 	suite.Run(t, &s)
 }
@@ -179,6 +190,6 @@ func (suite *CourseServiceSuite) TestDeleteCourse() {
 	suite.Require().Nil(err)
 
 	_, err = suite.repo.GetCourse(expected.Id)
-	suite.Require().Equal(err, mongo.ErrNoDocuments)
+	suite.Require().NotEmpty(err)
 
 }

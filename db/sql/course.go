@@ -95,3 +95,11 @@ func (r *repository) AddCourse(dc *demo.Course) error {
 	return nil
 
 }
+
+func (r *repository) DeleteCourse(sid string) error {
+	id, err := strconv.Atoi(sid)
+	if err != nil {
+		return err
+	}
+	return r.db.Delete(&Course{}, id).Error
+}
