@@ -10,8 +10,8 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func (service *DemoService) GetCourse(ctx context.Context, id *wrapperspb.StringValue) (*pb.Course, error) {
-	course, err := service.course.Get(id.Value)
+func (s *DemoService) GetCourse(ctx context.Context, id *wrapperspb.StringValue) (*pb.Course, error) {
+	course, err := s.service.GetCourse(id.Value)
 
 	if err != nil {
 		return nil, err
@@ -26,14 +26,14 @@ func (service *DemoService) GetCourse(ctx context.Context, id *wrapperspb.String
 	return &pbCourse, nil
 }
 
-func (service *DemoService) AddCourse(ctx context.Context, newCourse *pb.Course) (*pb.Course, error) {
+func (s *DemoService) AddCourse(ctx context.Context, newCourse *pb.Course) (*pb.Course, error) {
 	var demoCourse demo.Course
 	err := mapstructure.Decode(newCourse, &demoCourse)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.course.Add(&demoCourse)
+	err = s.service.AddCourse(&demoCourse)
 	if err != nil {
 		return nil, err
 	}
@@ -43,14 +43,14 @@ func (service *DemoService) AddCourse(ctx context.Context, newCourse *pb.Course)
 	return newCourse, nil
 }
 
-func (service *DemoService) EditCourse(ctx context.Context, updateCourse *pb.Course) (*pb.Course, error) {
+func (s *DemoService) EditCourse(ctx context.Context, updateCourse *pb.Course) (*pb.Course, error) {
 	var demoCourse demo.Course
 	err := mapstructure.Decode(updateCourse, &demoCourse)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.course.Edit(&demoCourse)
+	err = s.service.EditCourse(&demoCourse)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +63,8 @@ func (service *DemoService) EditCourse(ctx context.Context, updateCourse *pb.Cou
 	return updateCourse, nil
 }
 
-func (service *DemoService) DeleteCourse(ctx context.Context, id *wrapperspb.StringValue) (*emptypb.Empty, error) {
-	err := service.course.Delete(id.Value)
+func (s *DemoService) DeleteCourse(ctx context.Context, id *wrapperspb.StringValue) (*emptypb.Empty, error) {
+	err := s.service.DeleteCourse(id.Value)
 
 	if err != nil {
 		return nil, err

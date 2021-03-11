@@ -8,10 +8,10 @@ import (
 
 	"log"
 
+	"github.com/ctoto93/demo"
 	mongoRepo "github.com/ctoto93/demo/db/mongo"
 	"github.com/ctoto93/demo/rpc"
 	"github.com/ctoto93/demo/rpc/pb"
-	"github.com/ctoto93/demo/service"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -28,7 +28,7 @@ const (
 
 var lis *bufconn.Listener
 
-func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, service.Repository) {
+func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, demo.Repository) {
 	opts := options.Client().ApplyURI(testDbUri)
 	c, err := mongo.Connect(context.TODO(), opts)
 
@@ -41,7 +41,7 @@ func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, service.Re
 	return c, db, repo
 }
 
-func initGRPC(t *testing.T, repo service.Repository) (*grpc.ClientConn, pb.DemoServiceClient) {
+func initGRPC(t *testing.T, repo demo.Repository) (*grpc.ClientConn, pb.DemoServiceClient) {
 	lis = bufconn.Listen(bufSize)
 	s := grpc.NewServer()
 	pb.RegisterDemoServiceServer(s, rpc.NewDemoService(repo))

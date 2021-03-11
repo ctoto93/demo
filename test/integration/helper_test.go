@@ -6,9 +6,10 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ctoto93/demo"
 	mongoRepo "github.com/ctoto93/demo/db/mongo"
 	"github.com/ctoto93/demo/db/sql"
-	"github.com/ctoto93/demo/service"
+	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/sqlite"
@@ -21,66 +22,90 @@ const (
 	testSQLitePath = "gorm.db"
 )
 
-func InitTestSQLiteRepo(t *testing.T) (*gorm.DB, service.Repository) {
+type ServiceSuite struct {
+	suite.Suite
+	repo    demo.Repository
+	service *demo.Service
+}
+
+type MongoServiceSuite struct {
+	ServiceSuite
+	client *mongo.Client
+	db     *mongo.Database
+}
+
+type SQLiteServiceSuite struct {
+	ServiceSuite
+	db *gorm.DB
+	tx *gorm.DB
+}
+
+func TestMongoService(t *testing.T) {
+	suite.Run(t, new(MongoServiceSuite))
+}
+
+func (suite *MongoServiceSuite) SetupSuite() {
+	opts := options.Client().ApplyURI(testDbUri)
+	client, err := mongo.Connect(context.TODO(), opts)
+
+	if err != nil {
+		suite.T().Fatal(err)
+	}
+
+	db := client.Database(testDbName)
+	repo := mongoRepo.NewRepositoryWithDb(db)
+	suite.client = client
+	suite.db = db
+	suite.repo = repo
+	suite.service = demo.NewService(repo)
+}
+
+func (suite *MongoServiceSuite) TearDownTest() {
+	ctx := context.Background()
+	err := suite.db.Drop(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func (suite *MongoServiceSuite) TearDownSuite() {
+	ctx := context.Background()
+	err := suite.client.Disconnect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func TestSQLiteService(t *testing.T) {
+	suite.Run(t, new(SQLiteServiceSuite))
+}
+
+func (suite *SQLiteServiceSuite) SetupSuite() {
 	db, err := gorm.Open(sqlite.Open(testSQLitePath), &gorm.Config{})
 	if err != nil {
-		t.Fatal(err)
+		suite.T().Fatal(err)
 	}
-	tx := db.Begin()
-	tx.AutoMigrate(sql.Course{}, sql.Student{})
 
-	repo := sql.NewRepository(tx)
+	if err := db.AutoMigrate(sql.Course{}, sql.Student{}); err != nil {
+		suite.T().Fatal()
+	}
 
-	return tx, repo
+	suite.db = db
 }
 
-func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, service.Repository) {
-	opts := options.Client().ApplyURI(testDbUri)
-	c, err := mongo.Connect(context.TODO(), opts)
+func (suite *SQLiteServiceSuite) SetupTest() {
+	suite.tx = suite.db.Begin()
+	suite.repo = sql.NewRepository(suite.tx)
+	suite.service = demo.NewService(suite.repo)
+}
 
+func (suite *SQLiteServiceSuite) TearDownTest() {
+	suite.tx.Rollback()
+}
+
+func (suite *SQLiteServiceSuite) TearDownSuite() {
+	err := os.Remove(testSQLitePath)
 	if err != nil {
-		t.Fatal(err)
-	}
-
-	db := c.Database(testDbName)
-	repo := mongoRepo.NewRepositoryWithDb(db)
-	return c, db, repo
-}
-
-func buildSQLCleanUpFunc(tx *gorm.DB) func() {
-	return func() {
-		tx.Rollback()
-	}
-
-}
-
-func buildSQLClientDisconnect() func() {
-	return func() {
-		err := os.Remove(testSQLitePath)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-}
-
-func buildMongoCleanUpFunc(db *mongo.Database) func() {
-	return func() {
-		ctx := context.Background()
-		err := db.Drop(ctx)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-}
-
-func buildMongoClientDisconnectFunc(client *mongo.Client) func() {
-	return func() {
-		ctx := context.Background()
-		err := client.Disconnect(ctx)
-		if err != nil {
-			log.Fatal(err)
-		}
+		log.Fatal(err)
 	}
 }

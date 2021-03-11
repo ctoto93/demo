@@ -10,8 +10,8 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func (service *DemoService) GetStudent(ctx context.Context, id *wrapperspb.StringValue) (*pb.Student, error) {
-	student, err := service.student.Get(id.Value)
+func (s *DemoService) GetStudent(ctx context.Context, id *wrapperspb.StringValue) (*pb.Student, error) {
+	student, err := s.service.GetStudent(id.Value)
 
 	if err != nil {
 		return nil, err
@@ -26,14 +26,14 @@ func (service *DemoService) GetStudent(ctx context.Context, id *wrapperspb.Strin
 	return &pbStudent, nil
 }
 
-func (service *DemoService) AddStudent(ctx context.Context, newStudent *pb.Student) (*pb.Student, error) {
+func (s *DemoService) AddStudent(ctx context.Context, newStudent *pb.Student) (*pb.Student, error) {
 	var demoStudent demo.Student
 	err := mapstructure.Decode(newStudent, &demoStudent)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.student.Add(&demoStudent)
+	err = s.service.AddStudent(&demoStudent)
 	if err != nil {
 		return nil, err
 	}
@@ -43,14 +43,14 @@ func (service *DemoService) AddStudent(ctx context.Context, newStudent *pb.Stude
 	return newStudent, nil
 }
 
-func (service *DemoService) EditStudent(ctx context.Context, updateStudent *pb.Student) (*pb.Student, error) {
+func (s *DemoService) EditStudent(ctx context.Context, updateStudent *pb.Student) (*pb.Student, error) {
 	var demoStudent demo.Student
 	err := mapstructure.Decode(updateStudent, &demoStudent)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.student.Edit(&demoStudent)
+	err = s.service.EditStudent(&demoStudent)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +63,8 @@ func (service *DemoService) EditStudent(ctx context.Context, updateStudent *pb.S
 	return updateStudent, nil
 }
 
-func (service *DemoService) DeleteStudent(ctx context.Context, id *wrapperspb.StringValue) (*emptypb.Empty, error) {
-	err := service.student.Delete(id.Value)
+func (s *DemoService) DeleteStudent(ctx context.Context, id *wrapperspb.StringValue) (*emptypb.Empty, error) {
+	err := s.service.DeleteStudent(id.Value)
 
 	if err != nil {
 		return nil, err

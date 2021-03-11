@@ -25,6 +25,15 @@ func (s *Student) HasCourse(c Course) bool {
 	return false
 }
 
+func (s *Student) IsOverCredit() bool {
+	sum := 0
+	for _, c := range s.Courses {
+		sum += c.Credit
+	}
+
+	return sum > StudentMaxCredits
+}
+
 type Course struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
@@ -42,6 +51,19 @@ func (c *Course) HasStudent(s Student) bool {
 	}
 
 	return false
+}
+
+func (c *Course) ValidateCourseRequirement() error {
+	numStudents := len(c.Students)
+	if numStudents < MinNumOfStudents {
+		return InsufficientStudentsErr
+	}
+
+	if numStudents > MaxNumOfStudents {
+		return ExceedingStudentsErr
+	}
+
+	return nil
 }
 
 func ToStudent(in interface{}) (Student, error) {

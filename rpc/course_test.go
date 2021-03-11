@@ -6,14 +6,13 @@ import (
 
 	"github.com/ctoto93/demo"
 	"github.com/ctoto93/demo/rpc/pb"
-	"github.com/ctoto93/demo/service"
 	"github.com/ctoto93/demo/test/factory"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/require"
 )
 
-func createStudents(t *testing.T, repo service.Repository, num int) []demo.Student {
+func createStudents(t *testing.T, repo demo.Repository, num int) []demo.Student {
 	var students []demo.Student
 	for i := 0; i < num; i++ {
 		s := factory.NewStudent()
@@ -40,7 +39,7 @@ func TestMongoGRPCCourseFlow(t *testing.T) {
 	}()
 
 	c := factory.NewCourse()
-	students := createStudents(t, repo, service.MinNumOfStudents)
+	students := createStudents(t, repo, demo.MinNumOfStudents)
 	c.Students = students
 
 	var pbs pb.Course

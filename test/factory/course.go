@@ -8,7 +8,7 @@ import (
 func NewCourse() demo.Course {
 	c := demo.Course{
 		Name:     randomdata.Adjective(),
-		Credit:   randomdata.Number(18, 25),
+		Credit:   1,
 		Students: make([]demo.Student, 0),
 	}
 	return c

@@ -1,12 +1,12 @@
 package sql
 
 import (
-	"github.com/ctoto93/demo/service"
+	"github.com/ctoto93/demo"
 	"gorm.io/gorm"
 )
 
 type repository struct {
-	service.UnimplementedRepository
+	demo.UnimplementedRepository
 	db *gorm.DB
 }
 

@@ -1,73 +1,30 @@
 package integration_test
 
 import (
-	"testing"
-
-	"github.com/ctoto93/demo/service"
+	"github.com/ctoto93/demo"
 	"github.com/ctoto93/demo/test/factory"
-	"github.com/stretchr/testify/suite"
 )
 
-type CourseServiceSuite struct {
-	suite.Suite
-	repo             service.Repository
-	service          *service.Course
-	cleanUpDb        func()
-	disconnectClient func()
-}
-
-func (suite *CourseServiceSuite) TearDownTest() {
-	suite.cleanUpDb()
-}
-
-func (suite *CourseServiceSuite) TearDownSuite() {
-	suite.disconnectClient()
-}
-
-func TestCourseMongoService(t *testing.T) {
-	client, db, repo := InitTestMongoRepo(t)
-	serv := service.NewCourse(repo)
-	s := CourseServiceSuite{
-		service:          serv,
-		repo:             repo,
-		cleanUpDb:        buildMongoCleanUpFunc(db),
-		disconnectClient: buildMongoClientDisconnectFunc(client),
-	}
-	suite.Run(t, &s)
-}
-
-func TestCourseSQLiteService(t *testing.T) {
-	tx, repo := InitTestSQLiteRepo(t)
-	serv := service.NewCourse(repo)
-	s := CourseServiceSuite{
-		service:          serv,
-		repo:             repo,
-		cleanUpDb:        buildSQLCleanUpFunc(tx),
-		disconnectClient: buildSQLClientDisconnect(),
-	}
-	suite.Run(t, &s)
-}
-
-func (suite *CourseServiceSuite) TestGetCourse() {
+func (suite *ServiceSuite) TestGetCourse() {
 
 	expected := factory.NewCourse()
 	err := suite.repo.AddCourse(&expected)
 	suite.Require().Nil(err)
 
-	actual, err := suite.service.Get(expected.Id)
+	actual, err := suite.service.GetCourse(expected.Id)
 	suite.Require().Nil(err)
 	suite.Require().Equal(expected, actual)
 
 }
 
-func (suite *CourseServiceSuite) TestAddCourse() {
+func (suite *ServiceSuite) TestAddCourse() {
 
-	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
+	expected := factory.NewCourseWithStudents(demo.MinNumOfStudents)
 	for i := range expected.Students {
 		err := suite.repo.AddStudent(&expected.Students[i])
 		suite.Require().Nil(err)
 	}
-	err := suite.service.Add(&expected)
+	err := suite.service.AddCourse(&expected)
 	suite.Require().Nil(err)
 
 	actual, err := suite.repo.GetCourse(expected.Id)
@@ -82,32 +39,32 @@ func (suite *CourseServiceSuite) TestAddCourse() {
 
 }
 
-func (suite *CourseServiceSuite) TestAddLessThanMinStudents() {
-	c := factory.NewCourseWithStudents(service.MinNumOfStudents - 1)
+func (suite *ServiceSuite) TestAddLessThanMinStudents() {
+	c := factory.NewCourseWithStudents(demo.MinNumOfStudents - 1)
 	for i := range c.Students {
 		err := suite.repo.AddStudent(&c.Students[i])
 		suite.Require().Nil(err)
 	}
-	err := suite.service.Add(&c)
-	suite.Equal(service.InsufficientStudentsErr, err, "Should return InsufficientStudents Err")
+	err := suite.service.AddCourse(&c)
+	suite.Equal(demo.InsufficientStudentsErr, err, "Should return InsufficientStudents Err")
 
 }
 
-func (suite *CourseServiceSuite) TestAddMoreThanMaxStudents() {
+func (suite *ServiceSuite) TestAddMoreThanMaxStudents() {
 
-	c := factory.NewCourseWithStudents(service.MaxNumOfStudents + 1)
+	c := factory.NewCourseWithStudents(demo.MaxNumOfStudents + 1)
 	for i := range c.Students {
 		err := suite.repo.AddStudent(&c.Students[i])
 		suite.Require().Nil(err)
 	}
-	err := suite.service.Add(&c)
-	suite.Require().Equal(service.ExceedingStudentsErr, err, "Should return ExceedingStudents Err")
+	err := suite.service.AddCourse(&c)
+	suite.Require().Equal(demo.ExceedingStudentsErr, err, "Should return ExceedingStudents Err")
 
 }
 
-func (suite *CourseServiceSuite) TestEditCourse() {
+func (suite *ServiceSuite) TestEditCourse() {
 
-	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
+	expected := factory.NewCourseWithStudents(demo.MinNumOfStudents)
 	for i := range expected.Students {
 		err := suite.repo.AddStudent(&expected.Students[i])
 		suite.Require().Nil(err)
@@ -123,7 +80,7 @@ func (suite *CourseServiceSuite) TestEditCourse() {
 	suite.Require().Nil(err)
 	expected.Students = append(expected.Students, newStudent)
 
-	err = suite.service.Edit(&expected)
+	err = suite.service.EditCourse(&expected)
 	suite.Require().Nil(err)
 
 	actual, err := suite.repo.GetCourse(expected.Id)
@@ -135,7 +92,7 @@ func (suite *CourseServiceSuite) TestEditCourse() {
 	suite.Require().True(newStudent.HasCourse(expected), "Added students should have the course")
 
 	expected.Students = expected.Students[:len(expected.Students)-1]
-	err = suite.service.Edit(&expected)
+	err = suite.service.EditCourse(&expected)
 	suite.Require().Nil(err)
 
 	removedStudent, err := suite.repo.GetStudent(newStudent.Id)
@@ -145,9 +102,9 @@ func (suite *CourseServiceSuite) TestEditCourse() {
 
 }
 
-func (suite *CourseServiceSuite) TestEditCourseLessThanMinStudents() {
+func (suite *ServiceSuite) TestEditCourseLessThanMinStudents() {
 
-	expected := factory.NewCourseWithStudents(service.MinNumOfStudents)
+	expected := factory.NewCourseWithStudents(demo.MinNumOfStudents)
 	for i := range expected.Students {
 		err := suite.repo.AddStudent(&expected.Students[i])
 		suite.Require().Nil(err)
@@ -155,16 +112,16 @@ func (suite *CourseServiceSuite) TestEditCourseLessThanMinStudents() {
 	err := suite.repo.AddCourse(&expected)
 	suite.Require().Nil(err)
 
-	expected.Students = expected.Students[:service.MinNumOfStudents-1]
+	expected.Students = expected.Students[:demo.MinNumOfStudents-1]
 
-	err = suite.service.Edit(&expected)
-	suite.Equal(service.InsufficientStudentsErr, err, "Should return service.InsufficientStudentsErr")
+	err = suite.service.EditCourse(&expected)
+	suite.Equal(demo.InsufficientStudentsErr, err, "Should return service.InsufficientStudentsErr")
 
 }
 
-func (suite *CourseServiceSuite) TestEditCourseMoreThanMaxStudents() {
+func (suite *ServiceSuite) TestEditCourseMoreThanMaxStudents() {
 
-	expected := factory.NewCourseWithStudents(service.MaxNumOfStudents)
+	expected := factory.NewCourseWithStudents(demo.MaxNumOfStudents)
 	for i := range expected.Students {
 		err := suite.repo.AddStudent(&expected.Students[i])
 		suite.Require().Nil(err)
@@ -175,18 +132,18 @@ func (suite *CourseServiceSuite) TestEditCourseMoreThanMaxStudents() {
 	suite.Require().Nil(err)
 
 	expected.Students = append(expected.Students, newStud)
-	err = suite.service.Edit(&expected)
-	suite.Equal(service.ExceedingStudentsErr, err, "Should return service.ExceedingStudentsErr")
+	err = suite.service.EditCourse(&expected)
+	suite.Equal(demo.ExceedingStudentsErr, err, "Should return service.ExceedingStudentsErr")
 
 }
 
-func (suite *CourseServiceSuite) TestDeleteCourse() {
+func (suite *ServiceSuite) TestDeleteCourse() {
 
 	expected := factory.NewCourse()
 	err := suite.repo.AddCourse(&expected)
 	suite.Require().Nil(err)
 
-	err = suite.service.Delete(expected.Id)
+	err = suite.service.DeleteCourse(expected.Id)
 	suite.Require().Nil(err)
 
 	_, err = suite.repo.GetCourse(expected.Id)
