@@ -6,6 +6,10 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+type Server interface {
+	Serve(address string) error
+}
+
 type Student struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`

@@ -1,6 +1,8 @@
 package rest
 
 import (
+	"net/http"
+
 	"github.com/ctoto93/demo"
 	"github.com/gin-gonic/gin"
 )
@@ -31,6 +33,26 @@ func (s *server) initRouter() {
 	}
 }
 
+func (s *server) sendErrorResponse(ctx *gin.Context, code int, err error) {
+	r := Response{
+		Meta: MetaResp{
+			Success: false,
+			Error:   err.Error(),
+		},
+	}
+	ctx.JSON(code, r)
+}
+
+func (s *server) sendSuccessResponse(ctx *gin.Context, data interface{}) {
+	r := Response{
+		Meta: MetaResp{
+			Success: true,
+		},
+		Data: data,
+	}
+	ctx.JSON(http.StatusOK, r)
+}
+
 func (s *server) Serve(address string) error {
 	return s.router.Run(address)
 }
@@ -44,4 +66,14 @@ func NewServer(repo demo.Repository) *server {
 	s.initRouter()
 
 	return s
+}
+
+type MetaResp struct {
+	Success bool   `json:"success"`
+	Error   string `json:"error"`
+}
+
+type Response struct {
+	Meta MetaResp    `json:"meta"`
+	Data interface{} `json:"data,omitempty"`
 }

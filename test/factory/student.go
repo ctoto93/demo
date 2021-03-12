@@ -13,6 +13,12 @@ func NewStudent() demo.Student {
 	}
 }
 
+func NewStudentWithId() demo.Student {
+	s := NewStudent()
+	s.Id = randomdata.Digits(3)
+	return s
+}
+
 func NewStudents(n int) []demo.Student {
 	students := []demo.Student{}
 	for i := 0; i < n; i++ {
