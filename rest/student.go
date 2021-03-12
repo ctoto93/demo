@@ -1,11 +1,19 @@
 package rest
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func (s *server) getStudent(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"message": "pong",
-	})
+	id := ctx.Param("id")
+	student, err := s.service.GetStudent(id)
+	if err != nil {
+		s.sendErrorResponse(ctx, http.StatusBadRequest, err)
+		return
+	}
+	s.sendSuccessResponse(ctx, student)
 }
 
 func (s *server) addStudent(ctx *gin.Context) {

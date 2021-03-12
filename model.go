@@ -73,11 +73,17 @@ func (c *Course) ValidateCourseRequirement() error {
 func ToStudent(in interface{}) (Student, error) {
 	var s Student
 	err := mapstructure.Decode(in, &s)
+	if s.Courses == nil {
+		s.Courses = make([]Course, 0)
+	}
 	return s, err
 }
 
 func ToCourse(in interface{}) (Course, error) {
 	var c Course
 	err := mapstructure.Decode(in, &c)
+	if c.Students == nil {
+		c.Students = make([]Student, 0)
+	}
 	return c, err
 }
