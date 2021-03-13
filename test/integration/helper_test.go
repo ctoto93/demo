@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
@@ -41,11 +42,23 @@ type SQLiteServiceSuite struct {
 	tx *gorm.DB
 }
 
+func getEnv(key, fallback string) string {
+	value, exists := os.LookupEnv(key)
+	if !exists {
+		value = fallback
+	}
+	return value
+}
+
 func TestMongoService(t *testing.T) {
 	suite.Run(t, new(MongoServiceSuite))
 }
 
 func (suite *MongoServiceSuite) SetupSuite() {
+	host := getEnv("MONGODB_HOST", "localhost")
+	port := getEnv("MONGODB_PORT", "27017")
+
+	testDbUri := fmt.Sprintf("mongodb://%s:%s/", host, port)
 	opts := options.Client().ApplyURI(testDbUri)
 	client, err := mongo.Connect(context.TODO(), opts)
 
