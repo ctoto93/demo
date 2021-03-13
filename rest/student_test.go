@@ -63,7 +63,7 @@ func (suite *RESTStudentSuite) TestGetStudent() {
 	suite.Require().Nil(err)
 
 	suite.Require().Equal(expected, actual)
-
+	suite.repo.AssertExpectations(suite.T())
 }
 
 func (suite *RESTStudentSuite) TestAddStudent() {
@@ -89,7 +89,7 @@ func (suite *RESTStudentSuite) TestAddStudent() {
 	suite.Require().Nil(err)
 
 	suite.Require().Equal(expected, actual)
-
+	suite.repo.AssertExpectations(suite.T())
 }
 
 func (suite *RESTStudentSuite) TestEditStudent() {
@@ -119,7 +119,7 @@ func (suite *RESTStudentSuite) TestEditStudent() {
 	suite.Require().Nil(err)
 
 	suite.Require().Equal(expected, actual)
-
+	suite.repo.AssertExpectations(suite.T())
 }
 
 func (suite *RESTStudentSuite) TestDeleteStudent() {
@@ -143,4 +143,5 @@ func (suite *RESTStudentSuite) TestDeleteStudent() {
 	suite.Require().Nil(err)
 
 	suite.Require().True(resp.Meta.Success)
+	suite.repo.AssertExpectations(suite.T())
 }

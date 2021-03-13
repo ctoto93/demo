@@ -56,7 +56,7 @@ func (suite *RESTCourseSuite) TestGetCourse() {
 	suite.Require().Nil(err)
 
 	suite.Require().Equal(expected, actual)
-
+	suite.repo.AssertExpectations(suite.T())
 }
 
 func (suite *RESTCourseSuite) TestAddCourse() {
@@ -84,7 +84,7 @@ func (suite *RESTCourseSuite) TestAddCourse() {
 	suite.Require().Nil(err)
 
 	suite.Require().Equal(expected, actual)
-
+	suite.repo.AssertExpectations(suite.T())
 }
 
 func (suite *RESTCourseSuite) TestEditCourse() {
@@ -115,7 +115,7 @@ func (suite *RESTCourseSuite) TestEditCourse() {
 	suite.Require().Nil(err)
 
 	suite.Require().Equal(expected, actual)
-
+	suite.repo.AssertExpectations(suite.T())
 }
 
 func (suite *RESTCourseSuite) TestDeleteCourse() {
@@ -139,4 +139,5 @@ func (suite *RESTCourseSuite) TestDeleteCourse() {
 	suite.Require().Nil(err)
 
 	suite.Require().True(resp.Meta.Success)
+	suite.repo.AssertExpectations(suite.T())
 }
