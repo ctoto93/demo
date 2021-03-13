@@ -23,6 +23,7 @@ func (s *server) addStudent(ctx *gin.Context) {
 	}
 
 	if err := s.service.AddStudent(&student); err != nil {
+		s.sendError(ctx, err)
 		return
 	}
 	s.send(ctx, student)
@@ -36,6 +37,7 @@ func (s *server) editStudent(ctx *gin.Context) {
 	}
 
 	if err := s.service.EditStudent(&student); err != nil {
+		s.sendError(ctx, err)
 		return
 	}
 	s.send(ctx, student)
