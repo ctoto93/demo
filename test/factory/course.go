@@ -34,3 +34,9 @@ func NewCourses(n int) []demo.Course {
 
 	return courses
 }
+
+func NewCourseWithId() demo.Course {
+	s := NewCourse()
+	s.Id = randomdata.Digits(3)
+	return s
+}
