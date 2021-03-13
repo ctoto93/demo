@@ -75,6 +75,10 @@ func ToStudent(in interface{}) (Student, error) {
 	err := mapstructure.Decode(in, &s)
 	if s.Courses == nil {
 		s.Courses = make([]Course, 0)
+	} else {
+		for i := range s.Courses {
+			s.Courses[i].Students = make([]Student, 0)
+		}
 	}
 	return s, err
 }
@@ -84,6 +88,10 @@ func ToCourse(in interface{}) (Course, error) {
 	err := mapstructure.Decode(in, &c)
 	if c.Students == nil {
 		c.Students = make([]Student, 0)
+	} else {
+		for i := range c.Students {
+			c.Students[i].Courses = make([]Course, 0)
+		}
 	}
 	return c, err
 }

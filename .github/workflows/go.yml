@@ -28,7 +28,7 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: go test ./test/integration
+      run: go test ./...
       env:
         MONGODB_HOST: mongodb
         MONGODB_PORT: 27017

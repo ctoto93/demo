@@ -27,8 +27,7 @@ func (s *server) GetCourse(ctx context.Context, id *wrapperspb.StringValue) (*pb
 }
 
 func (s *server) AddCourse(ctx context.Context, newCourse *pb.Course) (*pb.Course, error) {
-	var demoCourse demo.Course
-	err := mapstructure.Decode(newCourse, &demoCourse)
+	demoCourse, err := demo.ToCourse(newCourse)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +43,7 @@ func (s *server) AddCourse(ctx context.Context, newCourse *pb.Course) (*pb.Cours
 }
 
 func (s *server) EditCourse(ctx context.Context, updateCourse *pb.Course) (*pb.Course, error) {
-	var demoCourse demo.Course
-	err := mapstructure.Decode(updateCourse, &demoCourse)
+	demoCourse, err := demo.ToCourse(updateCourse)
 	if err != nil {
 		return nil, err
 	}

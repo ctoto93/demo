@@ -1,8 +1,7 @@
-package rpc_test
+package rpc
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"testing"
 
@@ -10,14 +9,11 @@ import (
 
 	"github.com/ctoto93/demo"
 	mongoRepo "github.com/ctoto93/demo/db/mongo"
-	"github.com/ctoto93/demo/rpc"
 	"github.com/ctoto93/demo/rpc/pb"
-	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
-	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -44,7 +40,8 @@ func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, demo.Repos
 func initGRPC(t *testing.T, repo demo.Repository) (*grpc.ClientConn, pb.DemoServiceClient) {
 	lis = bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	pb.RegisterDemoServiceServer(s, rpc.NewServer(repo))
+	demoRPCServer := NewServer(repo)
+	pb.RegisterDemoServiceServer(s, demoRPCServer)
 
 	bufDialer := func(context.Context, string) (net.Conn, error) { return lis.Dial() }
 
@@ -63,11 +60,4 @@ func initGRPC(t *testing.T, repo demo.Repository) (*grpc.ClientConn, pb.DemoServ
 
 	return conn, client
 
-}
-
-func checkProtoEqual(r *require.Assertions, expected, actual proto.Message) {
-	r.True(
-		proto.Equal(expected, actual),
-		fmt.Sprintf("These two protobuf messages are not equal:\nexpected: %v\nactual:  %v", expected, actual),
-	)
 }

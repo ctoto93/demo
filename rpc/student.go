@@ -27,8 +27,8 @@ func (s *server) GetStudent(ctx context.Context, id *wrapperspb.StringValue) (*p
 }
 
 func (s *server) AddStudent(ctx context.Context, newStudent *pb.Student) (*pb.Student, error) {
-	var demoStudent demo.Student
-	err := mapstructure.Decode(newStudent, &demoStudent)
+
+	demoStudent, err := demo.ToStudent(newStudent)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +44,7 @@ func (s *server) AddStudent(ctx context.Context, newStudent *pb.Student) (*pb.St
 }
 
 func (s *server) EditStudent(ctx context.Context, updateStudent *pb.Student) (*pb.Student, error) {
-	var demoStudent demo.Student
-	err := mapstructure.Decode(updateStudent, &demoStudent)
+	demoStudent, err := demo.ToStudent(updateStudent)
 	if err != nil {
 		return nil, err
 	}
