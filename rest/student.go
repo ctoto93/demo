@@ -29,9 +29,16 @@ func (s *server) addStudent(ctx *gin.Context) {
 }
 
 func (s *server) editStudent(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"message": "pong",
-	})
+	var student demo.Student
+	if err := ctx.BindJSON(&student); err != nil {
+		s.sendError(ctx, err)
+		return
+	}
+
+	if err := s.service.EditStudent(&student); err != nil {
+		return
+	}
+	s.send(ctx, student)
 }
 
 func (s *server) deleteStudent(ctx *gin.Context) {

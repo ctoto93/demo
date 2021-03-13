@@ -70,3 +70,33 @@ func (suite *RESTStudentSuite) TestAddStudent() {
 	suite.Require().Equal(expected, actual)
 
 }
+
+func (suite *RESTStudentSuite) TestEditStudent() {
+	expected := factory.NewStudentWithId()
+
+	suite.repo.On("EditStudent", &expected).Once().Return(nil)
+
+	body, err := json.Marshal(expected)
+	suite.Require().Nil(err)
+
+	url := fmt.Sprintf("%s/v1/students/%s", suite.server.URL, expected.Id)
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(body))
+	suite.Require().Nil(err)
+	req.Header.Set("Content-Type", "application/json")
+
+	httpResp, err := http.DefaultClient.Do(req)
+	suite.Require().Nil(err)
+	defer httpResp.Body.Close()
+
+	suite.Require().Equal(http.StatusOK, httpResp.StatusCode)
+
+	var resp Response
+	err = parseBody(httpResp.Body, &resp)
+	suite.Require().Nil(err)
+
+	actual, err := demo.ToStudent(resp.Data)
+	suite.Require().Nil(err)
+
+	suite.Require().Equal(expected, actual)
+
+}
