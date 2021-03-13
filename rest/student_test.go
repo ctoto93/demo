@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -44,11 +45,16 @@ func parseBody(r io.Reader, out *Response) error {
 	return nil
 }
 
-func (suite *RESTStudentSuite) TestGetStudent() {
-	expected := factory.NewStudentWithId()
-	suite.repo.On("GetStudent", expected.Id).Return(expected, nil)
+func (suite *RESTStudentSuite) TestAddStudent() {
+	newStudent := factory.NewStudent()
+	expected := newStudent
 
-	httpResp, err := http.Get(fmt.Sprintf("%s/v1/students/%s", suite.server.URL, expected.Id))
+	suite.repo.On("AddStudent", &newStudent).Once().Return(nil)
+
+	req, err := json.Marshal(newStudent)
+	suite.Require().Nil(err)
+
+	httpResp, err := http.Post(fmt.Sprintf("%s/v1/students/", suite.server.URL), "application/JSON", bytes.NewBuffer(req))
 	suite.Require().Nil(err)
 	defer httpResp.Body.Close()
 

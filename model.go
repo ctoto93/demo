@@ -14,7 +14,7 @@ type Student struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
 	Age       int       `json:"age"`
-	Courses   []Course  `json:"courses,omitempty"`
+	Courses   []Course  `json:"courses"`
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
@@ -42,7 +42,7 @@ type Course struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
 	Credit    int       `json:"credit"`
-	Students  []Student `json:"students,omitempty"`
+	Students  []Student `json:"students"`
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }

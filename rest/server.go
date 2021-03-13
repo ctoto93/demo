@@ -5,6 +5,8 @@ import (
 
 	"github.com/ctoto93/demo"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
 )
 
 type server struct {
@@ -18,7 +20,7 @@ func (s *server) initRouter() {
 		student := v1.Group("/students")
 		{
 			student.GET("/:id", s.getStudent)
-			student.POST("/:id", s.addStudent)
+			student.POST("/", s.addStudent)
 			student.PUT("/:id", s.editStudent)
 			student.DELETE("/:id", s.deleteStudent)
 		}
@@ -26,14 +28,21 @@ func (s *server) initRouter() {
 		course := v1.Group("/courses")
 		{
 			course.GET("/:id", s.getCourse)
-			course.POST("/:id", s.addCourse)
+			course.POST("/", s.addCourse)
 			course.PUT("/:id", s.editCourse)
 			course.DELETE("/:id", s.deleteCourse)
 		}
 	}
 }
 
-func (s *server) sendErrorResponse(ctx *gin.Context, code int, err error) {
+func (s *server) sendError(ctx *gin.Context, err error) {
+	var code int
+	switch err {
+	case gorm.ErrRecordNotFound, mongo.ErrNoDocuments:
+		code = http.StatusNotFound
+	default:
+		code = http.StatusInternalServerError
+	}
 	r := Response{
 		Meta: MetaResp{
 			Success: false,
@@ -43,7 +52,7 @@ func (s *server) sendErrorResponse(ctx *gin.Context, code int, err error) {
 	ctx.JSON(code, r)
 }
 
-func (s *server) sendSuccessResponse(ctx *gin.Context, data interface{}) {
+func (s *server) send(ctx *gin.Context, data interface{}) {
 	r := Response{
 		Meta: MetaResp{
 			Success: true,

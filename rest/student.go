@@ -1,8 +1,7 @@
 package rest
 
 import (
-	"net/http"
-
+	"github.com/ctoto93/demo"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,16 +9,23 @@ func (s *server) getStudent(ctx *gin.Context) {
 	id := ctx.Param("id")
 	student, err := s.service.GetStudent(id)
 	if err != nil {
-		s.sendErrorResponse(ctx, http.StatusBadRequest, err)
+		s.sendError(ctx, err)
 		return
 	}
-	s.sendSuccessResponse(ctx, student)
+	s.send(ctx, student)
 }
 
 func (s *server) addStudent(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"message": "pong",
-	})
+	var student demo.Student
+	if err := ctx.BindJSON(&student); err != nil {
+		s.sendError(ctx, err)
+		return
+	}
+
+	if err := s.service.AddStudent(&student); err != nil {
+		return
+	}
+	s.send(ctx, student)
 }
 
 func (s *server) editStudent(ctx *gin.Context) {
