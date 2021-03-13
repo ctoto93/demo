@@ -9,6 +9,7 @@ on:
 jobs:
   container-job:
     runs-on: ubuntu-latest
+    container: golang:1.15
 
     # runs all of the steps inside the specified container rather than on the VM host.
     # Because of this the network configuration changes from host based network to a container network.
@@ -21,10 +22,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15
+
 
     - name: Build
       run: go build -v ./...
