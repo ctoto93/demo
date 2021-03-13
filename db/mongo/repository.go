@@ -6,16 +6,20 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
 )
 
 type repository struct {
 	db *mongo.Database
 }
 
-func NewRepository(uri string, dbname string) *repository {
+func NewRepository(uri string) *repository {
 
-	opts := options.Client().ApplyURI("mongodb://localhost:27017")
-	c, err := mongo.Connect(context.TODO(), opts)
+	cs, err := connstring.ParseAndValidate(uri)
+	if err != nil {
+		panic(err)
+	}
+	c, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 
 	if err != nil {
 		panic(err)
@@ -30,7 +34,7 @@ func NewRepository(uri string, dbname string) *repository {
 	fmt.Println("Connected to MongoDB!")
 
 	return &repository{
-		db: c.Database(dbname),
+		db: c.Database(cs.Database),
 	}
 }
 
