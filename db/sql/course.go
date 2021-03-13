@@ -8,7 +8,7 @@ import (
 )
 
 type Course struct {
-	ID        int       `gorm:"primarykey"`
+	Id        int       `gorm:"primarykey"`
 	Name      string    `json:"name"`
 	Credit    int       `json:"credit"`
 	Students  []Student `json:"courses" gorm:"many2many:student_courses"`
@@ -18,7 +18,7 @@ type Course struct {
 
 func (c *Course) toDemo() demo.Course {
 	dc := demo.Course{
-		Id:       strconv.Itoa(c.ID),
+		Id:       strconv.Itoa(c.Id),
 		Name:     c.Name,
 		Credit:   c.Credit,
 		Students: make([]demo.Student, 0),
@@ -43,7 +43,7 @@ func NewCourse(dc demo.Course) (Course, error) {
 		if err != nil {
 			return Course{}, err
 		}
-		c.ID = id
+		c.Id = id
 	}
 
 	students := make([]Student, 0)
@@ -90,7 +90,7 @@ func (r *repository) AddCourse(dc *demo.Course) error {
 		return err
 	}
 
-	dc.Id = strconv.Itoa(c.ID)
+	dc.Id = strconv.Itoa(c.Id)
 
 	return nil
 
