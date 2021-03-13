@@ -3,7 +3,9 @@ package integration_test
 import (
 	"context"
 	"log"
+	"math/rand"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/ctoto93/demo"
@@ -18,7 +20,6 @@ import (
 
 const (
 	testDbUri      = "mongodb://localhost:27017"
-	testDbName     = "demo_test"
 	testSQLitePath = "gorm.db"
 )
 
@@ -52,9 +53,16 @@ func (suite *MongoServiceSuite) SetupSuite() {
 		suite.T().Fatal(err)
 	}
 
-	db := client.Database(testDbName)
-	repo := mongoRepo.NewRepositoryWithDb(db)
 	suite.client = client
+
+}
+
+func (suite *MongoServiceSuite) SetupTest() {
+
+	testDbName := "test_" + strconv.FormatInt(rand.Int63(), 10)
+	db := suite.client.Database(testDbName)
+	repo := mongoRepo.NewRepositoryWithDb(db)
+
 	suite.db = db
 	suite.repo = repo
 	suite.service = demo.NewService(repo)
