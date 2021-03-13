@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func (s *DemoService) GetCourse(ctx context.Context, id *wrapperspb.StringValue) (*pb.Course, error) {
+func (s *server) GetCourse(ctx context.Context, id *wrapperspb.StringValue) (*pb.Course, error) {
 	course, err := s.service.GetCourse(id.Value)
 
 	if err != nil {
@@ -26,7 +26,7 @@ func (s *DemoService) GetCourse(ctx context.Context, id *wrapperspb.StringValue)
 	return &pbCourse, nil
 }
 
-func (s *DemoService) AddCourse(ctx context.Context, newCourse *pb.Course) (*pb.Course, error) {
+func (s *server) AddCourse(ctx context.Context, newCourse *pb.Course) (*pb.Course, error) {
 	var demoCourse demo.Course
 	err := mapstructure.Decode(newCourse, &demoCourse)
 	if err != nil {
@@ -43,7 +43,7 @@ func (s *DemoService) AddCourse(ctx context.Context, newCourse *pb.Course) (*pb.
 	return newCourse, nil
 }
 
-func (s *DemoService) EditCourse(ctx context.Context, updateCourse *pb.Course) (*pb.Course, error) {
+func (s *server) EditCourse(ctx context.Context, updateCourse *pb.Course) (*pb.Course, error) {
 	var demoCourse demo.Course
 	err := mapstructure.Decode(updateCourse, &demoCourse)
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *DemoService) EditCourse(ctx context.Context, updateCourse *pb.Course) (
 	return updateCourse, nil
 }
 
-func (s *DemoService) DeleteCourse(ctx context.Context, id *wrapperspb.StringValue) (*emptypb.Empty, error) {
+func (s *server) DeleteCourse(ctx context.Context, id *wrapperspb.StringValue) (*emptypb.Empty, error) {
 	err := s.service.DeleteCourse(id.Value)
 
 	if err != nil {

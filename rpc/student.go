@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func (s *DemoService) GetStudent(ctx context.Context, id *wrapperspb.StringValue) (*pb.Student, error) {
+func (s *server) GetStudent(ctx context.Context, id *wrapperspb.StringValue) (*pb.Student, error) {
 	student, err := s.service.GetStudent(id.Value)
 
 	if err != nil {
@@ -26,7 +26,7 @@ func (s *DemoService) GetStudent(ctx context.Context, id *wrapperspb.StringValue
 	return &pbStudent, nil
 }
 
-func (s *DemoService) AddStudent(ctx context.Context, newStudent *pb.Student) (*pb.Student, error) {
+func (s *server) AddStudent(ctx context.Context, newStudent *pb.Student) (*pb.Student, error) {
 	var demoStudent demo.Student
 	err := mapstructure.Decode(newStudent, &demoStudent)
 	if err != nil {
@@ -43,7 +43,7 @@ func (s *DemoService) AddStudent(ctx context.Context, newStudent *pb.Student) (*
 	return newStudent, nil
 }
 
-func (s *DemoService) EditStudent(ctx context.Context, updateStudent *pb.Student) (*pb.Student, error) {
+func (s *server) EditStudent(ctx context.Context, updateStudent *pb.Student) (*pb.Student, error) {
 	var demoStudent demo.Student
 	err := mapstructure.Decode(updateStudent, &demoStudent)
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *DemoService) EditStudent(ctx context.Context, updateStudent *pb.Student
 	return updateStudent, nil
 }
 
-func (s *DemoService) DeleteStudent(ctx context.Context, id *wrapperspb.StringValue) (*emptypb.Empty, error) {
+func (s *server) DeleteStudent(ctx context.Context, id *wrapperspb.StringValue) (*emptypb.Empty, error) {
 	err := s.service.DeleteStudent(id.Value)
 
 	if err != nil {

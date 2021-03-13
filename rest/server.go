@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ctoto93/demo"
@@ -63,6 +64,7 @@ func (s *server) send(ctx *gin.Context, data interface{}) {
 }
 
 func (s *server) Serve(address string) error {
+	fmt.Printf("Serving on %s\n", address)
 	return s.router.Run(address)
 }
 

@@ -44,7 +44,7 @@ func InitTestMongoRepo(t *testing.T) (*mongo.Client, *mongo.Database, demo.Repos
 func initGRPC(t *testing.T, repo demo.Repository) (*grpc.ClientConn, pb.DemoServiceClient) {
 	lis = bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	pb.RegisterDemoServiceServer(s, rpc.NewDemoService(repo))
+	pb.RegisterDemoServiceServer(s, rpc.NewServer(repo))
 
 	bufDialer := func(context.Context, string) (net.Conn, error) { return lis.Dial() }
 
