@@ -45,6 +45,27 @@ func parseBody(r io.Reader, out *Response) error {
 	return nil
 }
 
+func (suite *RESTStudentSuite) TestGetStudent() {
+	expected := factory.NewStudentWithId()
+	suite.repo.On("GetStudent", expected.Id).Return(expected, nil)
+
+	httpResp, err := http.Get(fmt.Sprintf("%s/v1/students/%s", suite.server.URL, expected.Id))
+	suite.Require().Nil(err)
+	defer httpResp.Body.Close()
+
+	suite.Require().Equal(http.StatusOK, httpResp.StatusCode)
+
+	var resp Response
+	err = parseBody(httpResp.Body, &resp)
+	suite.Require().Nil(err)
+
+	actual, err := demo.ToStudent(resp.Data)
+	suite.Require().Nil(err)
+
+	suite.Require().Equal(expected, actual)
+
+}
+
 func (suite *RESTStudentSuite) TestAddStudent() {
 	newStudent := factory.NewStudent()
 	expected := newStudent
