@@ -100,3 +100,26 @@ func (suite *RESTStudentSuite) TestEditStudent() {
 	suite.Require().Equal(expected, actual)
 
 }
+
+func (suite *RESTStudentSuite) TestDeleteStudent() {
+	expected := factory.NewStudentWithId()
+
+	suite.repo.On("DeleteStudent", expected.Id).Once().Return(nil)
+
+	url := fmt.Sprintf("%s/v1/students/%s", suite.server.URL, expected.Id)
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	suite.Require().Nil(err)
+	req.Header.Set("Content-Type", "application/json")
+
+	httpResp, err := http.DefaultClient.Do(req)
+	suite.Require().Nil(err)
+	defer httpResp.Body.Close()
+
+	suite.Require().Equal(http.StatusOK, httpResp.StatusCode)
+
+	var resp Response
+	err = parseBody(httpResp.Body, &resp)
+	suite.Require().Nil(err)
+
+	suite.Require().True(resp.Meta.Success)
+}

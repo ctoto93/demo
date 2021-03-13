@@ -42,7 +42,11 @@ func (s *server) editStudent(ctx *gin.Context) {
 }
 
 func (s *server) deleteStudent(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"message": "pong",
-	})
+	id := ctx.Param("id")
+	err := s.service.DeleteStudent(id)
+	if err != nil {
+		s.sendError(ctx, err)
+		return
+	}
+	s.send(ctx, nil)
 }
