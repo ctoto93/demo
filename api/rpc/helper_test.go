@@ -8,8 +8,8 @@ import (
 	"log"
 
 	"github.com/ctoto93/demo"
+	"github.com/ctoto93/demo/api/rpc/pb"
 	mongoRepo "github.com/ctoto93/demo/db/mongo"
-	"github.com/ctoto93/demo/rpc/pb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"

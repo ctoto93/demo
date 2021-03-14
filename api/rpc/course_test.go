@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ctoto93/demo"
-	"github.com/ctoto93/demo/rpc/pb"
+	"github.com/ctoto93/demo/api/rpc/pb"
 	"github.com/ctoto93/demo/test/factory"
 	"github.com/ctoto93/demo/test/mocks"
 	"github.com/golang/protobuf/ptypes/wrappers"
@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type GRPCStudentSuite struct {
+type GRPCCourseSuite struct {
 	suite.Suite
 	service *demo.Service
 	repo    *mocks.Repository
@@ -23,7 +23,7 @@ type GRPCStudentSuite struct {
 	client  pb.DemoServiceClient
 }
 
-func (suite *GRPCStudentSuite) SetupTest() {
+func (suite *GRPCCourseSuite) SetupTest() {
 	suite.repo = &mocks.Repository{}
 	conn, client := initGRPC(suite.T(), suite.repo)
 	suite.service = demo.NewService(suite.repo)
@@ -32,77 +32,76 @@ func (suite *GRPCStudentSuite) SetupTest() {
 	suite.client = client
 }
 
-func (suite *GRPCStudentSuite) TearDownTest() {
+func (suite *GRPCCourseSuite) TearDownTest() {
 	suite.conn.Close()
 }
 
-func TestGRPCStudentSuite(t *testing.T) {
-	suite.Run(t, new(GRPCStudentSuite))
+func TestGRPCCourseSuite(t *testing.T) {
+	suite.Run(t, new(GRPCCourseSuite))
 }
 
-func (suite *GRPCStudentSuite) TestGetStudent() {
+func (suite *GRPCCourseSuite) TestGetCourse() {
 	ctx := context.TODO()
-	expected := factory.NewStudentWithId()
-	suite.repo.On("GetStudent", expected.Id).Return(expected, nil)
+	expected := factory.NewCourseWithStudents(demo.MinNumOfStudents)
+	suite.repo.On("GetCourse", expected.Id).Return(expected, nil)
 
-	resp, err := suite.client.GetStudent(ctx, &wrappers.StringValue{Value: expected.Id})
+	resp, err := suite.client.GetCourse(ctx, &wrappers.StringValue{Value: expected.Id})
 	suite.Require().Nil(err)
 
-	actual, err := demo.ToStudent(resp)
+	actual, err := demo.ToCourse(resp)
 	suite.Require().Nil(err)
 
 	suite.Require().Equal(expected, actual)
 	suite.repo.AssertExpectations(suite.T())
 }
 
-func (suite *GRPCStudentSuite) TestAddStudent() {
+func (suite *GRPCCourseSuite) TestAddCourse() {
 	ctx := context.TODO()
-	newStudent := factory.NewStudent()
-	expected := newStudent
+	expected := factory.NewCourseWithStudents(demo.MinNumOfStudents)
 
-	suite.repo.On("AddStudent", &newStudent).Return(nil)
+	suite.repo.On("AddCourse", &expected).Return(nil)
 
-	var pbs pb.Student
-	err := mapstructure.Decode(newStudent, &pbs)
-	suite.Require().Nil(err)
-
-	resp, err := suite.client.AddStudent(ctx, &pbs)
-	suite.Require().Nil(err)
-
-	actual, err := demo.ToStudent(resp)
-	suite.Require().Nil(err)
-
-	suite.Require().Equal(expected, actual)
-	suite.repo.AssertExpectations(suite.T())
-}
-
-func (suite *GRPCStudentSuite) TestEditStudent() {
-	ctx := context.TODO()
-	expected := factory.NewStudentWithId()
-
-	suite.repo.On("EditStudent", &expected).Return(nil)
-
-	var pbs pb.Student
+	var pbs pb.Course
 	err := mapstructure.Decode(expected, &pbs)
 	suite.Require().Nil(err)
 
-	resp, err := suite.client.EditStudent(ctx, &pbs)
+	resp, err := suite.client.AddCourse(ctx, &pbs)
 	suite.Require().Nil(err)
 
-	actual, err := demo.ToStudent(resp)
+	actual, err := demo.ToCourse(resp)
 	suite.Require().Nil(err)
 
 	suite.Require().Equal(expected, actual)
 	suite.repo.AssertExpectations(suite.T())
 }
 
-func (suite *GRPCStudentSuite) TestDeleteStudent() {
+func (suite *GRPCCourseSuite) TestEditCourse() {
 	ctx := context.TODO()
-	expected := factory.NewStudentWithId()
+	expected := factory.NewCourseWithStudents(demo.MinNumOfStudents)
 
-	suite.repo.On("DeleteStudent", expected.Id).Return(nil)
+	suite.repo.On("EditCourse", &expected).Return(nil)
 
-	_, err := suite.client.DeleteStudent(ctx, &wrappers.StringValue{Value: expected.Id})
+	var pbs pb.Course
+	err := mapstructure.Decode(expected, &pbs)
+	suite.Require().Nil(err)
+
+	resp, err := suite.client.EditCourse(ctx, &pbs)
+	suite.Require().Nil(err)
+
+	actual, err := demo.ToCourse(resp)
+	suite.Require().Nil(err)
+
+	suite.Require().Equal(expected, actual)
+	suite.repo.AssertExpectations(suite.T())
+}
+
+func (suite *GRPCCourseSuite) TestDeleteCourse() {
+	ctx := context.TODO()
+	expected := factory.NewCourseWithId()
+
+	suite.repo.On("DeleteCourse", expected.Id).Return(nil)
+
+	_, err := suite.client.DeleteCourse(ctx, &wrappers.StringValue{Value: expected.Id})
 	suite.Require().Nil(err)
 
 	suite.repo.AssertExpectations(suite.T())

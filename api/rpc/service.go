@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/ctoto93/demo"
-	"github.com/ctoto93/demo/rpc/pb"
+	"github.com/ctoto93/demo/api/rpc/pb"
 	"google.golang.org/grpc"
 )
 

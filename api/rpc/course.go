@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/ctoto93/demo"
-	"github.com/ctoto93/demo/rpc/pb"
+	"github.com/ctoto93/demo/api/rpc/pb"
 	"github.com/mitchellh/mapstructure"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"

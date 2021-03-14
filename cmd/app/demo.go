@@ -4,10 +4,10 @@ import (
 	"os"
 
 	"github.com/ctoto93/demo"
+	"github.com/ctoto93/demo/api/rest"
+	"github.com/ctoto93/demo/api/rpc"
 	"github.com/ctoto93/demo/db/mongo"
 	"github.com/ctoto93/demo/db/sql"
-	"github.com/ctoto93/demo/rest"
-	"github.com/ctoto93/demo/rpc"
 	"github.com/urfave/cli/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
