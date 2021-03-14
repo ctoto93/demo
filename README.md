@@ -12,5 +12,6 @@ This repository is an example of a demo project of students-courses relationship
 * db [actual implementation of a repository (MongoDB/SQLite)]
 * api [actual implementation of an api server (REST/gRPC)]
 * test [test mocks and factories; integration test of db-service]
+* cmd [main application executable]
 
 
